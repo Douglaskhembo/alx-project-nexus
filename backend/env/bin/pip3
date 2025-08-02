@@ -1,4 +1,4 @@
-#!/home/khembo/myProjects/AlxProjects/alx-project-nexus/backend/env/bin/python3
+#!/home/khembo/myProjects/AlxProjects/alx-project-nexus/backend/env/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
