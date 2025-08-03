@@ -1,6 +1,10 @@
 import { Product } from "../types";
+import { useAppDispatch } from "../hooks";
+import { addToCart } from "../features/cartSlice";
 
 export default function ProductCard({ product }: { product: Product }) {
+  const dispatch = useAppDispatch();
+
   return (
     <div className="bg-white border rounded-lg shadow p-4 flex flex-col">
       <div className="relative w-full pb-[100%]">
@@ -22,7 +26,10 @@ export default function ProductCard({ product }: { product: Product }) {
         {!product.inStock ? (
           <span className="text-red-500 text-sm">Out of Stock</span>
         ) : (
-          <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+          <button
+            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+            onClick={() => dispatch(addToCart(product))}
+          >
             Add to Cart
           </button>
         )}
@@ -30,3 +37,4 @@ export default function ProductCard({ product }: { product: Product }) {
     </div>
   );
 }
+
