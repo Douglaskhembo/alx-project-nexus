@@ -1,7 +1,7 @@
 export default function Filters() {
   return (
-    <aside className="bg-white rounded-lg shadow p-4 w-full md:w-64">
-      <h2 className="font-semibold mb-4">Filters</h2>
+    <aside className="bg-white rounded-lg shadow p-6 w-full md:w-64">
+      <h2 className="font-semibold text-lg mb-4">Filters</h2>
       <input
         type="text"
         placeholder="Search products..."
@@ -13,11 +13,18 @@ export default function Filters() {
         <option value="fitness">Fitness</option>
       </select>
       <div className="mb-4">
-        <label className="block mb-1">Price Range</label>
-        <input type="range" min="0" max="1000" className="w-full" />
+        <label className="block mb-1 text-sm font-medium text-gray-700">
+          Price Range
+        </label>
+        <input
+          type="range"
+          min="0"
+          max="1000"
+          className="w-full accent-blue-500"
+        />
       </div>
       <div>
-        <label className="flex items-center">
+        <label className="flex items-center text-sm">
           <input type="checkbox" className="mr-2" /> In Stock Only
         </label>
       </div>

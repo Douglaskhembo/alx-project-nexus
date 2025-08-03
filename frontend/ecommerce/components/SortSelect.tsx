@@ -8,7 +8,7 @@ export default function SortSelect({ value, onChange }: SortProps) {
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="border rounded p-2"
+      className="border rounded p-2 text-sm"
     >
       <option value="newest">Newest</option>
       <option value="price_asc">Price: Low to High</option>

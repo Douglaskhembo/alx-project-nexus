@@ -6,7 +6,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const dispatch = useAppDispatch();
 
   return (
-    <div className="bg-white border rounded-lg shadow p-4 flex flex-col">
+    <div className="bg-white border rounded-lg shadow hover:shadow-lg transition p-4 flex flex-col">
       <div className="relative w-full pb-[100%]">
         <img
           src={product.image}
@@ -19,8 +19,8 @@ export default function ProductCard({ product }: { product: Product }) {
           </span>
         )}
       </div>
-      <h3 className="font-semibold mt-3">{product.name}</h3>
-      <p className="text-gray-500 text-sm mb-2">{product.description}</p>
+      <h3 className="font-semibold mt-3 text-lg">{product.name}</h3>
+      <p className="text-gray-500 text-sm mb-2 line-clamp-2">{product.description}</p>
       <div className="flex justify-between items-center mt-auto">
         <span className="font-bold text-lg">${product.price}</span>
         {!product.inStock ? (

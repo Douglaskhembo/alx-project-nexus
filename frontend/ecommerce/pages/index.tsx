@@ -30,7 +30,7 @@ export default function Home() {
   return (
     <div>
       <Header />
-      <main className="flex flex-col md:flex-row p-4 gap-4">
+      <main className="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row gap-6">
         <Filters />
         <section className="flex-1">
           <div className="flex justify-between items-center mb-4">

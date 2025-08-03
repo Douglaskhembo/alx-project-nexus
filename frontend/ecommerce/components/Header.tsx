@@ -24,57 +24,56 @@ export default function Header() {
 
   return (
     <>
-      <header className="flex items-center justify-between p-4 bg-blue-600 text-white">
-        <Link href="/" className="text-xl font-bold">
-          NexusMarket
-        </Link>
-
-        <input
-          type="text"
-          placeholder="Search products..."
-          className="p-2 rounded text-black w-1/2"
-        />
-
-        <div className="flex space-x-4 items-center">
-          <Link href="/cart" className="relative">
-            <ShoppingCart className="w-6 h-6" />
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-xs rounded-full px-1">
-                {cartCount}
-              </span>
-            )}
-          </Link>
-
-          {auth.token ? (
-            <>
-              <Link href="/profile">
-                <User className="w-6 h-6" />
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="text-sm border px-2 py-1 rounded hover:bg-white hover:text-blue-600 transition"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => setShowLogin(true)}
-                className="text-sm border px-2 py-1 rounded hover:bg-white hover:text-blue-600 transition"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => setShowRegister(true)}
-                className="text-sm border px-2 py-1 rounded hover:bg-white hover:text-blue-600 transition"
-              >
-                Register
-              </button>
-            </>
+    <header className="flex flex-wrap md:flex-nowrap items-center justify-between gap-4 p-4 bg-white shadow sticky top-0 z-50">
+      <Link href="/" className="text-2xl font-bold text-blue-600">
+        NexusMarket
+      </Link>
+      <input
+        type="text"
+        placeholder="Search products..."
+        className="flex-1 min-w-[200px] p-2 border rounded-md"
+      />
+      <div className="flex space-x-2 items-center">
+        {/* Cart */}
+        <Link href="/cart" className="relative p-2 rounded hover:bg-gray-100">
+          <ShoppingCart className="w-6 h-6 text-gray-700" />
+          {cartCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">
+              {cartCount}
+            </span>
           )}
-        </div>
-      </header>
+        </Link>
+        {/* Auth */}
+        {auth.token ? (
+          <>
+            <Link href="/profile" className="p-2 hover:bg-gray-100 rounded">
+              <User className="w-6 h-6 text-gray-700" />
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="text-sm px-3 py-1 rounded border border-gray-300 hover:bg-gray-100"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={() => setShowLogin(true)}
+              className="text-sm px-3 py-1 rounded border border-gray-300 hover:bg-gray-100"
+            >
+              Login
+            </button>
+            <button
+              onClick={() => setShowRegister(true)}
+              className="text-sm px-3 py-1 rounded border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+            >
+              Register
+            </button>
+          </>
+        )}
+      </div>
+    </header>
 
       {showLogin && (
         <LoginModal
