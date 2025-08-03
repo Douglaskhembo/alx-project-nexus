@@ -55,6 +55,15 @@ class APIConfig {
   removeFromCart(data: any) {
     return api.post(`${PRODUCTS_URL}/cart/remove/`, data);
   }
+
+  addProduct(data: FormData) {
+  return api.post(`${PRODUCTS_URL}/products/`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+
 }
 
 export default new APIConfig();
