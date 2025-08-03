@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../hooks";
+import { useAppDispatch, useAppSelector } from "../hooks/index";
 import { login } from "../features/authSlice";
 import { useRouter } from "next/router";
 

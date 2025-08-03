@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useAppDispatch, useAppSelector } from "../hooks";
+import { useAppDispatch, useAppSelector } from "../hooks/index";
 import { fetchProducts } from "../features/productsSlice";
 import ProductCard from "../components/ProductCard";
 import Filters from "../components/Filters";
