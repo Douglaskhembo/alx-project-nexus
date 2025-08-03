@@ -1,5 +1,7 @@
+// src/features/authSlice.ts
+
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../services/api";
+import API from "../services/apiConfig";
 
 interface AuthState {
   token: string | null;
@@ -15,10 +17,15 @@ const initialState: AuthState = {
 
 export const login = createAsyncThunk(
   "auth/login",
-  async (credentials: { email: string; password: string }) => {
-    const response = await api.post("/auth/login", credentials);
-    localStorage.setItem("token", response.data.token);
-    return response.data.token;
+  async (credentials: { email: string; password: string }, { rejectWithValue }) => {
+    try {
+      const response = await API.login(credentials);
+      const token = response.data.access;
+      localStorage.setItem("token", token);
+      return token;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.detail || "Login failed");
+    }
   }
 );
 
@@ -35,6 +42,7 @@ const authSlice = createSlice({
     builder
       .addCase(login.pending, (state) => {
         state.status = "loading";
+        state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
         state.status = "succeeded";
@@ -42,7 +50,7 @@ const authSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message || "Login failed";
+        state.error = action.payload as string;
       });
   },
 });
