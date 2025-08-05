@@ -1,4 +1,3 @@
-// pages/index.tsx
 import { useEffect, useState, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { fetchProducts } from "../features/productsSlice";

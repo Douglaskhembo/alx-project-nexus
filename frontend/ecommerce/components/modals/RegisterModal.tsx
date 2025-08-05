@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { toast } from "react-toastify"; // Import toast
+import { toast } from "react-toastify";
 import API from "../../services/apiConfig";
 
 interface RegisterModalProps {

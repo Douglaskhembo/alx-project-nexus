@@ -1,4 +1,3 @@
-// components/ProductCard.tsx
 import Link from "next/link";
 import { useAppDispatch } from "../hooks";
 import { addToCart } from "../features/cartSlice";

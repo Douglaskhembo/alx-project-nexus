@@ -3,6 +3,7 @@ import { useAppSelector, useAppDispatch } from "../hooks";
 import { logout } from "../features/authSlice";
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import { hasPermission } from "../utils/permissions";
 
 const LoginModal = dynamic(() => import("./modals/LoginModal"));
 const RegisterModal = dynamic(() => import("./modals/RegisterModal"));
@@ -11,6 +12,7 @@ export default function Header() {
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector((state) => state.cart.items);
   const auth = useAppSelector((state) => state.auth);
+  const userRole = auth.role;
   const cartCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
 
   const [showLogin, setShowLogin] = useState(false);

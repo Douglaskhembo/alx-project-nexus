@@ -1,5 +1,3 @@
-// src/services/APIConfig.ts
-
 import api from "@/utils/api";
 import publicApi from "../utils/publicApi";
 
@@ -25,7 +23,7 @@ class APIConfig {
     return api.post(`${USERS_URL}/admin/create-seller/`, sellerData);
   }
 
-  // Seller-only endpoint (example protected view)
+  // Seller-only endpoint
   getSellerOnlyView() {
     return api.get(`${USERS_URL}/seller-only/`);
   }
