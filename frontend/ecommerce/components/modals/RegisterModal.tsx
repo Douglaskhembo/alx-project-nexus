@@ -7,7 +7,9 @@ interface RegisterModalProps {
 }
 
 export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModalProps) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone_number, setPhoneNumber] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +18,14 @@ export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModa
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await API.registerUser({ email, username, password });
+      await API.registerUser({
+        name,
+        email,
+        username,
+        password,
+        phone_number,
+        role: "BUYER", // Hardcoded role
+      });
       setSuccess(true);
       setError(null);
     } catch (err: any) {
@@ -26,7 +35,6 @@ export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModa
 
   return (
     <div className="modal fade show d-block" tabIndex={-1} role="dialog" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-      {/* Updated: Replaced modal-dialog-centered with modal-dialog-upper */}
       <div className="modal-dialog modal-dialog-upper" role="document">
         <div className="modal-content">
           <div className="modal-header">
@@ -41,7 +49,19 @@ export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModa
               </p>
             )}
             <form onSubmit={handleRegister}>
-              <div className="mb-3">
+              <div className="mb-3 d-flex align-items-center gap-2">
+                <label style={{ width: "120px" }}>Name:</label>
+                <input
+                  type="text"
+                  placeholder="Full name"
+                  className="form-control"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="mb-3 d-flex align-items-center gap-2">
+                <label style={{ width: "120px" }}>Username:</label>
                 <input
                   type="text"
                   placeholder="Username"
@@ -51,7 +71,8 @@ export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModa
                   required
                 />
               </div>
-              <div className="mb-3">
+              <div className="mb-3 d-flex align-items-center gap-2">
+                <label style={{ width: "120px" }}>Email:</label>
                 <input
                   type="email"
                   placeholder="Email"
@@ -61,7 +82,19 @@ export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModa
                   required
                 />
               </div>
-              <div className="mb-3">
+              <div className="mb-3 d-flex align-items-center gap-2">
+                <label style={{ width: "120px" }}>Phone Number:</label>
+                <input
+                  type="text"
+                  placeholder="070 1234 5678"
+                  className="form-control"
+                  value={phone_number}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="mb-3 d-flex align-items-center gap-2">
+                <label style={{ width: "120px" }}>Password:</label>
                 <input
                   type="password"
                   placeholder="Password"
@@ -71,10 +104,7 @@ export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModa
                   required
                 />
               </div>
-              <button
-                type="submit"
-                className="btn btn-primary w-100"
-              >
+              <button type="submit" className="btn btn-primary w-100">
                 Register
               </button>
             </form>

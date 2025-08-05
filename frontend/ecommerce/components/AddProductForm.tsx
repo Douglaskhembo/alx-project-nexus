@@ -1,149 +1,130 @@
-import { useState, useEffect } from "react";
-import API from "../services/apiConfig";
+import Link from "next/link";
+import { useAppSelector, useAppDispatch } from "../hooks";
+import { logout } from "../features/authSlice";
+import { useState } from "react";
+import dynamic from "next/dynamic";
 
-export default function AddProductForm() {
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    discount_percent: "",
-    tags: "",
-    stock: "",
-    category: "",
-  });
-  const [categories, setCategories] = useState([]);
-  const [image, setImage] = useState<File | null>(null);
-  const [message, setMessage] = useState("");
+const LoginModal = dynamic(() => import("./modals/LoginModal"));
+const RegisterModal = dynamic(() => import("./modals/RegisterModal"));
 
-  // Fetch categories from backend
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await API.getAllCategories();
-        setCategories(res.data);
-      } catch (err) {
-        console.error("Failed to load categories");
-      }
-    };
-    fetchCategories();
-  }, []);
+export default function Header() {
+  const dispatch = useAppDispatch();
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const auth = useAppSelector((state) => state.auth);
+  const cartCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const form = new FormData();
-    Object.entries(formData).forEach(([key, value]) => form.append(key, value));
-    if (image) form.append("image", image);
-
-    try {
-      await API.addProduct(form);
-      setMessage("Product added successfully");
-      setFormData({
-        name: "",
-        description: "",
-        price: "",
-        discount_percent: "",
-        tags: "",
-        stock: "",
-        category: "",
-      });
-      setImage(null);
-    } catch (error) {
-      setMessage("Error adding product");
-      console.error(error);
-    }
+  const handleLogout = () => {
+    dispatch(logout());
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white rounded shadow mt-8">
-      <h2 className="text-xl font-bold mb-4">Add New Product</h2>
-      {message && <p className="mb-4 text-sm text-center text-blue-600">{message}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          name="name"
-          placeholder="Product Name"
-          className="w-full border p-2 rounded"
-          value={formData.name}
-          onChange={handleChange}
-          required
+    <>
+      <nav className="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div className="container-fluid">
+          <Link href="/" className="navbar-brand h1 fw-bold text-primary">
+            NexusMarket
+          </Link>
+
+          <div className="d-flex flex-grow-1 mx-lg-4">
+            <input
+              type="text"
+              placeholder="Search products..."
+              className="form-control"
+            />
+          </div>
+
+          <div className="d-flex align-items-center">
+            {/* Cart Icon */}
+            <Link
+              href="/cart"
+              className="position-relative text-dark text-decoration-none p-2 mx-1"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+              </svg>
+              {cartCount > 0 && (
+                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {cartCount}
+                  <span className="visually-hidden">cart items</span>
+                </span>
+              )}
+            </Link>
+
+            {auth.token ? (
+              <>
+                {/* Add Product Icon */}
+                <Link
+                  href="/add-product"
+                  className="text-dark text-decoration-none p-2 mx-1"
+                  title="Add Product"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 4a.5.5 0 0 1 .5.5V7.5H11.5a.5.5 0 0 1 0 1H8.5V11.5a.5.5 0 0 1-1 0V8.5H4.5a.5.5 0 0 1 0-1H7.5V4.5A.5.5 0 0 1 8 4z"/>
+                    <path fillRule="evenodd" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zM8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0z"/>
+                  </svg>
+                </Link>
+
+                {/* Profile Icon */}
+                <Link
+                  href="/profile"
+                  className="text-dark text-decoration-none p-2 mx-1"
+                  title="Profile"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                    <path fillRule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                  </svg>
+                </Link>
+
+                {/* Logout Button */}
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-outline-secondary btn-sm"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => setShowLogin(true)}
+                  className="btn btn-outline-secondary btn-sm me-2"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => setShowRegister(true)}
+                  className="btn btn-primary btn-sm"
+                >
+                  Register
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      {showLogin && (
+        <LoginModal
+          onClose={() => setShowLogin(false)}
+          onSwitchToRegister={() => {
+            setShowLogin(false);
+            setShowRegister(true);
+          }}
         />
-        <textarea
-          name="description"
-          placeholder="Description"
-          className="w-full border p-2 rounded"
-          rows={3}
-          value={formData.description}
-          onChange={handleChange}
+      )}
+      {showRegister && (
+        <RegisterModal
+          onClose={() => setShowRegister(false)}
+          onSwitchToLogin={() => {
+            setShowRegister(false);
+            setShowLogin(true);
+          }}
         />
-        <input
-          name="price"
-          type="number"
-          placeholder="Price"
-          className="w-full border p-2 rounded"
-          value={formData.price}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="discount_percent"
-          type="number"
-          placeholder="Discount (%)"
-          className="w-full border p-2 rounded"
-          value={formData.discount_percent}
-          onChange={handleChange}
-        />
-        <input
-          name="stock"
-          type="number"
-          placeholder="Stock"
-          className="w-full border p-2 rounded"
-          value={formData.stock}
-          onChange={handleChange}
-        />
-        <input
-          name="tags"
-          placeholder="Tags (comma-separated)"
-          className="w-full border p-2 rounded"
-          value={formData.tags}
-          onChange={handleChange}
-        />
-        <select
-          name="category"
-          className="w-full border p-2 rounded"
-          value={formData.category}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Select Category</option>
-          {categories.map((cat: any) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
-        <input
-          type="file"
-          onChange={handleFileChange}
-          accept="image/*"
-          className="w-full border p-2 rounded"
-        />
-        <button
-          type="submit"
-          className="bg-blue-600 text-white w-full p-2 rounded hover:bg-blue-700"
-        >
-          Add Product
-        </button>
-      </form>
-    </div>
+      )}
+    </>
   );
 }
