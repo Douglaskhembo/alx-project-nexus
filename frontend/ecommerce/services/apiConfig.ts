@@ -1,6 +1,7 @@
 // src/services/APIConfig.ts
 
-import api from "../utils/api";
+import api from "@/utils/api";
+import publicApi from "../utils/publicApi";
 
 const USERS_URL = "/users";
 const PRODUCTS_URL = "/products";
@@ -8,7 +9,7 @@ const PRODUCTS_URL = "/products";
 class APIConfig {
   // Auth
   registerUser(registerData: any) {
-    return api.post(`${USERS_URL}/register/`, registerData);
+    return publicApi.post(`${USERS_URL}/register/`, registerData);
   }
 
   login(credentials: { email: string; password: string }) {

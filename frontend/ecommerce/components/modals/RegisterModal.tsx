@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-toastify"; // Import toast
 import API from "../../services/apiConfig";
 
 interface RegisterModalProps {
@@ -6,17 +7,18 @@ interface RegisterModalProps {
   onSwitchToLogin?: () => void;
 }
 
-export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModalProps) {
+export default function RegisterModal({ onClose }: RegisterModalProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone_number, setPhoneNumber] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await API.registerUser({
         name,
@@ -24,17 +26,42 @@ export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModa
         username,
         password,
         phone_number,
-        role: "BUYER", // Hardcoded role
+        role: "BUYER",
       });
-      setSuccess(true);
+
+      // Show popup message
+      toast.success("Account created successfully!", {
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+      });
+
+      // Clear form
+      setName("");
+      setEmail("");
+      setUsername("");
+      setPassword("");
+      setPhoneNumber("");
       setError(null);
+
+      // Close modal
+      onClose();
     } catch (err: any) {
       setError(err.response?.data?.detail || "Registration failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="modal fade show d-block" tabIndex={-1} role="dialog" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+    <div
+      className="modal fade show d-block"
+      tabIndex={-1}
+      role="dialog"
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+    >
       <div className="modal-dialog modal-dialog-upper" role="document">
         <div className="modal-content">
           <div className="modal-header">
@@ -43,11 +70,6 @@ export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModa
           </div>
           <div className="modal-body">
             {error && <p className="text-danger text-center">{error}</p>}
-            {success && (
-              <p className="text-success text-center">
-                Account created! You can now log in.
-              </p>
-            )}
             <form onSubmit={handleRegister}>
               <div className="mb-3 d-flex align-items-center gap-2">
                 <label style={{ width: "120px" }}>Name:</label>
@@ -104,8 +126,12 @@ export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModa
                   required
                 />
               </div>
-              <button type="submit" className="btn btn-primary w-100">
-                Register
+              <button
+                type="submit"
+                className="btn btn-primary w-100"
+                disabled={loading}
+              >
+                {loading ? "Registering..." : "Register"}
               </button>
             </form>
           </div>
@@ -113,8 +139,9 @@ export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModa
             Already have an account?{" "}
             <button
               type="button"
-              onClick={onSwitchToLogin}
+              onClick={onClose}
               className="btn btn-link p-0"
+              disabled={loading}
             >
               Sign In
             </button>
