@@ -34,6 +34,8 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ show, onHide }) => 
     } catch (error) {
       console.error(error);
       toast.error("Failed to add category");
+      setCategoryName("");
+      setCategoryDescription("");
     }
   };
 

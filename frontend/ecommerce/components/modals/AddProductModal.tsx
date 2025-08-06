@@ -18,6 +18,21 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
   const [tags, setTags] = useState("");
   const [error, setError] = useState("");
 
+  const resetForm = () => {
+    setProductName("");
+    setProductDesc("");
+    setProductPrice("");
+    setProductImage(null);
+    setCategoryId("");
+    // setBrand("");
+    setStockQuantity("");
+    setEnableDiscount(false);
+    setDiscount("");
+    setStatus("active");
+    setTags("");
+    setError("");
+  };
+
   const fetchCategories = async () => {
     try {
       if (categories.length === 0) {
@@ -41,31 +56,45 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
     const formData = new FormData();
     formData.append("name", productName);
     formData.append("description", productDesc);
-    formData.append("price", productPrice);
+    formData.append("initial_price", productPrice);
     formData.append("category_id", categoryId);
-    formData.append("brand", brand);
+    // formData.append("brand", brand);
     formData.append("stock", stockQuantity);
     formData.append("status", status);
     formData.append("tags", tags);
 
     if (enableDiscount && discount) {
-      formData.append("discount_percent", discount);
+      formData.append("discount_amount", discount);
     }
 
-    if (productImage) formData.append("image", productImage);
+    if (productImage) {
+      formData.append("image", productImage);
+    }
+    console.log("FormData being sent:");
+for (let pair of formData.entries()) {
+  console.log(`${pair[0]}: ${pair[1]}`);
+}
+
 
     try {
       await API.addProduct(formData);
       toast.success("Product added successfully");
+      resetForm();
       onHide();
     } catch (err) {
       console.error(err);
       toast.error("Failed to add product");
+      resetForm();
     }
   };
 
+  const handleModalClose = () => {
+    resetForm();
+    onHide();
+  };
+
   return (
-    <Modal show={show} onHide={onHide} centered>
+    <Modal show={show} onHide={handleModalClose} centered>
       <Modal.Header closeButton>
         <Modal.Title>Add Product</Modal.Title>
       </Modal.Header>
@@ -103,7 +132,7 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
             />
           </div>
 
-          <div className="form-group mb-3">
+          {/* <div className="form-group mb-3">
             <label>Brand</label>
             <input
               type="text"
@@ -112,7 +141,7 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
               onChange={(e) => setBrand(e.target.value)}
               required
             />
-          </div>
+          </div> */}
 
           <div className="form-group mb-3">
             <label>Stock Quantity</label>
