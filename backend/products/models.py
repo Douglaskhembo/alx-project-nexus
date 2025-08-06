@@ -11,8 +11,9 @@ class Category(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    discount_percent = models.PositiveIntegerField(default=0)
+    initial_price = models.DecimalField(max_digits=10, decimal_places=2)
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    new_price = models.DecimalField(max_digits=10, decimal_places=2, editable=False, default=0.00)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)
     tags = models.CharField(max_length=255, blank=True)
     stock = models.PositiveIntegerField(default=10)
@@ -21,20 +22,21 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        indexes = [models.Index(fields=['price'])]
+        indexes = [models.Index(fields=['initial_price'])]
 
     def __str__(self):
         return self.name
 
     @property
-    def discounted_price(self):
-        if self.discount_percent:
-            return round(self.price * (1 - self.discount_percent / 100), 2)
-        return self.price
-
-    @property
     def tag_list(self):
         return [tag.strip() for tag in self.tags.split(",") if tag.strip()]
+
+    def save(self, *args, **kwargs):
+        self.new_price = self.initial_price - self.discount_amount
+        if self.new_price < 0:
+            self.new_price = 0.00
+        super().save(*args, **kwargs)
+
 
 
 class Cart(models.Model):
@@ -45,7 +47,7 @@ class Cart(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'product')  # Ensure 1 entry per product-user
+        unique_together = ('user', 'product')
 
 
 

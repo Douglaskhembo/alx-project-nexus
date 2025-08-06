@@ -19,7 +19,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_fields = ['category__id', 'stock']
     search_fields = ['name', 'description', 'tags']
-    ordering_fields = ['price', 'created_at']
+    ordering_fields = ['initial_price', 'created_at']
 
     def get_queryset(self):
         user = self.request.user
