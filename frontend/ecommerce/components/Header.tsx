@@ -7,6 +7,8 @@ import dynamic from "next/dynamic";
 const LoginModal = dynamic(() => import("./modals/LoginModal"));
 const RegisterModal = dynamic(() => import("./modals/RegisterModal"));
 const AddProductModal = dynamic(() => import("./modals/AddProductModal"));
+const AddCategoryModal = dynamic(() => import("./modals/AddCategoryModal"));
+
 
 export default function Header() {
   const dispatch = useAppDispatch();
@@ -17,6 +19,8 @@ export default function Header() {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showAddProduct, setShowAddProduct] = useState(false);
+  const [showAddCategory, setShowAddCategory] = useState(false);
+
 
   const handleLogout = () => {
     dispatch(logout());
@@ -54,6 +58,18 @@ export default function Header() {
 
             {auth.token ? (
               <>
+                 {/* Add Category Icon */}
+                <button
+                  onClick={() => setShowAddCategory(true)}
+                  className="text-dark text-decoration-none p-2 mx-1 btn btn-link"
+                  title="Add Category"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 4a.5.5 0 0 1 .5.5V7.5H11.5a.5.5 0 0 1 0 1H8.5V11.5a.5.5 0 0 1-1 0V8.5H4.5a.5.5 0 0 1 0-1H7.5V4.5A.5.5 0 0 1 8 4z" />
+                    <path fillRule="evenodd" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zM8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0z" />
+                  </svg>
+                </button>
+
                 {/* Add Product Icon */}
                 <button
                   onClick={() => setShowAddProduct(true)}
@@ -120,11 +136,8 @@ export default function Header() {
           }}
         />
       )}
-<AddProductModal
-  show={showAddProduct}
-  onHide={() => setShowAddProduct(false)}
-/>
-
+<AddProductModal show={showAddProduct} onHide={() => setShowAddProduct(false)} />
+<AddCategoryModal show={showAddCategory} onHide={() => setShowAddCategory(false)} />
     </>
   );
 }

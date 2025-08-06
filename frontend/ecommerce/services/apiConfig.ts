@@ -30,7 +30,7 @@ class APIConfig {
 
   // Products
   getAllProducts(params = {}) {
-    return api.get(`${PRODUCTS_URL}/products/`, { params }); // supports pagination, filters
+    return api.get(`${PRODUCTS_URL}/products/`, { params });
   }
 
   getProductById(id: number) {
@@ -45,6 +45,11 @@ class APIConfig {
   getAllCategories() {
     return api.get(`${PRODUCTS_URL}/categories/`);
   }
+
+  addCategory(categoryData: { name: string; description: string }) {
+    return api.post(`${PRODUCTS_URL}/categories/`, categoryData);
+  }
+
 
   // Cart
   addToCart(data: any) {
