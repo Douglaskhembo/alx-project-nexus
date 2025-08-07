@@ -50,7 +50,19 @@ class Cart(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'product')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'product'],
+                name='unique_user_product',
+                condition=models.Q(user__isnull=False)
+            ),
+            models.UniqueConstraint(
+                fields=['session_key', 'product'],
+                name='unique_session_product',
+                condition=models.Q(user__isnull=True)
+            )
+        ]
+
 
 
 
