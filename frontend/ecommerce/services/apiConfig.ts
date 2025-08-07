@@ -30,7 +30,7 @@ class APIConfig {
 
   // Products
   getAllProducts(params = {}) {
-    return api.get(`${PRODUCTS_URL}/products/`, { params });
+    return publicApi.get(`${PRODUCTS_URL}/products/`, { params });
   }
 
   getProductById(id: number) {

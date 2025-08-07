@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useAppSelector, useAppDispatch } from "../hooks";
 import { logout } from "../features/authSlice";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
 const LoginModal = dynamic(() => import("./modals/LoginModal"));
@@ -9,18 +9,22 @@ const RegisterModal = dynamic(() => import("./modals/RegisterModal"));
 const AddProductModal = dynamic(() => import("./modals/AddProductModal"));
 const AddCategoryModal = dynamic(() => import("./modals/AddCategoryModal"));
 
-
 export default function Header() {
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector((state) => state.cart.items);
   const auth = useAppSelector((state) => state.auth);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const cartCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
 
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [showAddCategory, setShowAddCategory] = useState(false);
-
 
   const handleLogout = () => {
     dispatch(logout());
@@ -48,7 +52,7 @@ export default function Header() {
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
               </svg>
-              {cartCount > 0 && (
+              {isMounted && cartCount > 0 && (
                 <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                   {cartCount}
                   <span className="visually-hidden">cart items</span>
@@ -56,9 +60,9 @@ export default function Header() {
               )}
             </Link>
 
-            {auth.token ? (
+            {isMounted && auth.token ? (
               <>
-                 {/* Add Category Icon */}
+                {/* Add Category Button */}
                 <button
                   onClick={() => setShowAddCategory(true)}
                   className="text-dark text-decoration-none p-2 mx-1 btn btn-link"
@@ -70,7 +74,7 @@ export default function Header() {
                   </svg>
                 </button>
 
-                {/* Add Product Icon */}
+                {/* Add Product Button */}
                 <button
                   onClick={() => setShowAddProduct(true)}
                   className="text-dark text-decoration-none p-2 mx-1 btn btn-link"
@@ -82,7 +86,7 @@ export default function Header() {
                   </svg>
                 </button>
 
-                {/* Profile Icon */}
+                {/* Profile */}
                 <Link href="/profile" className="text-dark text-decoration-none p-2 mx-1" title="Profile">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
@@ -90,7 +94,7 @@ export default function Header() {
                   </svg>
                 </Link>
 
-                {/* Logout Button */}
+                {/* Logout */}
                 <button
                   onClick={handleLogout}
                   className="btn btn-outline-secondary btn-sm"
@@ -99,25 +103,28 @@ export default function Header() {
                 </button>
               </>
             ) : (
-              <>
-                <button
-                  onClick={() => setShowLogin(true)}
-                  className="btn btn-outline-secondary btn-sm me-2"
-                >
-                  Login
-                </button>
-                <button
-                  onClick={() => setShowRegister(true)}
-                  className="btn btn-primary btn-sm"
-                >
-                  Register
-                </button>
-              </>
+              isMounted && (
+                <>
+                  <button
+                    onClick={() => setShowLogin(true)}
+                    className="btn btn-outline-secondary btn-sm me-2"
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => setShowRegister(true)}
+                    className="btn btn-primary btn-sm"
+                  >
+                    Register
+                  </button>
+                </>
+              )
             )}
           </div>
         </div>
       </nav>
 
+      {/* Modals */}
       {showLogin && (
         <LoginModal
           onClose={() => setShowLogin(false)}
@@ -136,8 +143,8 @@ export default function Header() {
           }}
         />
       )}
-<AddProductModal show={showAddProduct} onHide={() => setShowAddProduct(false)} />
-<AddCategoryModal show={showAddCategory} onHide={() => setShowAddCategory(false)} />
+      <AddProductModal show={showAddProduct} onHide={() => setShowAddProduct(false)} />
+      <AddCategoryModal show={showAddCategory} onHide={() => setShowAddCategory(false)} />
     </>
   );
 }
