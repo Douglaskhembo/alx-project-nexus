@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import apiConfig from "../services/apiConfig"; // corrected import
+import apiConfig from "../services/apiConfig";
 import { Product } from "../types";
 
 interface ProductsState {
@@ -17,7 +17,8 @@ const initialState: ProductsState = {
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async () => {
-    const response = await apiConfig.getAllProducts(); // fixed
+    const response = await apiConfig.getAllProducts();
+    console.log("Fetched products:", response.data);
     return response.data;
   }
 );
@@ -33,7 +34,7 @@ const productsSlice = createSlice({
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.items = [...state.items, ...action.payload];
+        state.items = action.payload.results;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.status = "failed";

@@ -10,7 +10,7 @@ export interface Product {
   currency: string;
   discount_amount: number;
   new_price: number;
-  image?: string | null;
+  image_url?: string | null;
   tags: string;
   stock: number;
   rating?: number | null;
@@ -20,10 +20,8 @@ export interface Product {
     name: string;
     description: string;
   };
-  seller?: {
-    id: number;
-    name: string;
-  } | null;
+  seller: number;
+  seller_name?: string;
   created_at: string;
 }
 
@@ -40,26 +38,28 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="card shadow-sm h-100 position-relative">
-      {product.discount_amount > 0 && (
+      {/* {product.discount_amount > 0 && (
         <span className="badge bg-danger position-absolute top-0 start-0 m-2">
           -{product.discount_amount}
         </span>
-      )}
+      )} */}
 
       <Link href={`/product/${product.id}`}>
         <img
-          src={product.image || "/placeholder.png"}
+          src={product.image_url || "/placeholder.png"}
           className="card-img-top"
           alt={product.name}
           style={{ height: '200px', objectFit: 'cover' }}
         />
       </Link>
 
-
-
       <div className="card-body d-flex flex-column">
         <h5 className="card-title text-truncate">{product.name}</h5>
-
+        {product.seller_name && (
+          <span className="text-muted me-2">
+            seller: <strong>{product.seller_name}</strong>
+          </span>
+        )}
         {product.rating !== undefined && (
           <div className="d-flex align-items-center small mb-2">
             <span className="text-warning">
