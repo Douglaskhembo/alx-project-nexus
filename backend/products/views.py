@@ -37,6 +37,11 @@ class ProductViewSet(viewsets.ModelViewSet):
         else:
             raise PermissionDenied("Only SELLER or ADMIN can add products.")
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Product, Category
+from rest_framework.reverse import reverse
 from users.models import User
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -16,10 +17,19 @@ class ProductSerializer(serializers.ModelSerializer):
     discounted_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     tags = serializers.ListField(child=serializers.CharField(), source='tag_list', read_only=True)
 
+    image_url = serializers.SerializerMethodField()
+
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        if obj.image:
+            return request.build_absolute_uri(obj.image.url)
+        return None
+
     class Meta:
         model = Product
         fields = [
-            'id', 'name', 'description', 'initial_price', 'discount_amount', 'discounted_price',
-            'image', 'tags', 'stock', 'category', 'category_id', 'seller', 'seller_name', 'created_at'
+            'id', 'name', 'description', 'initial_price', 'currency',
+            'discount_amount', 'discounted_price', 'image_url',
+            'tags', 'stock', 'category', 'category_id', 'seller',
+            'seller_name', 'rating', 'reviews', 'created_at'
         ]
-        read_only_fields = ['id', 'created_at', 'seller']
