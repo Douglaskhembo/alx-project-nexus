@@ -1,6 +1,6 @@
 from rest_framework import viewsets, filters
-from .models import Product, Category
-from .serializers import ProductSerializer, CategorySerializer
+from .models import Product, Category, Currency
+from .serializers import ProductSerializer, CategorySerializer, CurrencySerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.views import APIView
@@ -13,6 +13,9 @@ from rest_framework.generics import DestroyAPIView
 from django.shortcuts import get_object_or_404
 
 
+class CurrencyView(viewsets.ModelViewSet):
+    queryset = Currency.objects.all().order_by('currency_code')
+    serializer_class = CurrencySerializer
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer

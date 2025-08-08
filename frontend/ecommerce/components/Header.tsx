@@ -158,7 +158,7 @@ export default function Header() {
       )}
       <AddProductModal show={showAddProduct} onHide={() => setShowAddProduct(false)} />
       <AddCategoryModal show={showAddCategory} onHide={() => setShowAddCategory(false)} />
-      {showAddCurrency && (<AddCurrencyModal onClose={() => setShowAddCurrency(false)} />)}
+      <AddCurrencyModal show={showAddCurrency} onHide={() => setShowAddCurrency(false)} />
     </>
   );
 }

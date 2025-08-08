@@ -7,12 +7,17 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+class Currency(models.Model):
+    country_name = models.CharField(max_length=250, unique=True)
+    country_code = models.CharField(max_length=100, unique=True)
+    currency_code = models.CharField(max_length=250, unique=True)
+    currency_name = models.CharField(max_length=250, unique=True)
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     initial_price = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=255)
+    currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
     discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     new_price = models.DecimalField(max_digits=10, decimal_places=2, editable=False, default=0.00)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)

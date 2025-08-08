@@ -29,7 +29,7 @@ class APIConfig {
   }
 
   // Currency
-  creatCurrency(currencyData: string) {
+  createCurrency(currencyData: any) {
     return api.post(`${PRODUCTS_URL}/currencies/`, currencyData);
   }
   getAllCurrencies() {
