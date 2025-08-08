@@ -10,7 +10,8 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
   const [productImage, setProductImage] = useState<File | null>(null);
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [categoryId, setCategoryId] = useState("");
-  const [brand, setBrand] = useState("");
+  const [currencies, setCurrencies] = useState<{ id: string; currency_code: string }[]>([]);
+  const [currencyId, setCurrencyId] = useState("");
   const [stockQuantity, setStockQuantity] = useState("");
   const [enableDiscount, setEnableDiscount] = useState(false);
   const [discount, setDiscount] = useState("");
@@ -24,7 +25,7 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
     setProductPrice("");
     setProductImage(null);
     setCategoryId("");
-    // setBrand("");
+    setCurrencyId("");
     setStockQuantity("");
     setEnableDiscount(false);
     setDiscount("");
@@ -37,12 +38,23 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
     try {
       if (categories.length === 0) {
         const res = await API.getAllCategories();
-        console.log("Categories API response:", res.data);
-        setCategories(res.data.results); // <-- FIX HERE
+        setCategories(res.data.results || res.data);
       }
     } catch (err) {
       console.error(err);
       setError("Failed to load categories.");
+    }
+  };
+
+  const fetchCurrencies = async () => {
+    try {
+      if (currencies.length === 0) {
+        const res = await API.getAllCurrencies();
+        setCurrencies(res.data.results || res.data);
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load currencies.");
     }
   };
 
@@ -53,13 +65,17 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
       toast.error("Please select a category.");
       return;
     }
+    if (!currencyId) {
+      toast.error("Please select a currency.");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("name", productName);
     formData.append("description", productDesc);
     formData.append("initial_price", productPrice);
     formData.append("category_id", categoryId);
-    // formData.append("brand", brand);
+    formData.append("currency_id", currencyId);
     formData.append("stock", stockQuantity);
     formData.append("status", status);
     formData.append("tags", tags);
@@ -71,11 +87,6 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
     if (productImage) {
       formData.append("image", productImage);
     }
-    console.log("FormData being sent:");
-for (let pair of formData.entries()) {
-  console.log(`${pair[0]}: ${pair[1]}`);
-}
-
 
     try {
       await API.addProduct(formData);
@@ -85,7 +96,6 @@ for (let pair of formData.entries()) {
     } catch (err) {
       console.error(err);
       toast.error("Failed to add product");
-      resetForm();
     }
   };
 
@@ -132,17 +142,6 @@ for (let pair of formData.entries()) {
               required
             />
           </div>
-
-          {/* <div className="form-group mb-3">
-            <label>Brand</label>
-            <input
-              type="text"
-              className="form-control"
-              value={brand}
-              onChange={(e) => setBrand(e.target.value)}
-              required
-            />
-          </div> */}
 
           <div className="form-group mb-3">
             <label>Stock Quantity</label>
@@ -194,7 +193,25 @@ for (let pair of formData.entries()) {
                 </option>
               ))}
             </select>
-            {error && <p className="text-danger mt-2">{error}</p>}
+          </div>
+
+          {/* Currency dropdown */}
+          <div className="form-group mb-3">
+            <label>Currency</label>
+            <select
+              className="form-control"
+              value={currencyId}
+              onChange={(e) => setCurrencyId(e.target.value)}
+              onFocus={fetchCurrencies}
+              required
+            >
+              <option value="">Select</option>
+              {currencies.map((cur) => (
+                <option key={cur.id} value={cur.id}>
+                  {cur.currency_code}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="form-check mb-2">

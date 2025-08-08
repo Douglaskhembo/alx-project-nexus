@@ -28,6 +28,14 @@ class APIConfig {
     return api.get(`${USERS_URL}/seller-only/`);
   }
 
+  // Currency
+  creatCurrency(currencyData: string) {
+    return api.post(`${PRODUCTS_URL}/currencies/`, currencyData);
+  }
+  getAllCurrencies() {
+    return api.get(`${PRODUCTS_URL}/currencies/`);
+  }
+
   // Products
   getAllProducts(params = {}) {
     return publicApi.get(`${PRODUCTS_URL}/products/`, { params });
