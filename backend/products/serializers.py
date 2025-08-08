@@ -30,6 +30,7 @@ class ProductSerializer(serializers.ModelSerializer):
     discounted_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     tags = serializers.ListField(child=serializers.CharField(), source='tag_list', read_only=True)
     image_url = serializers.SerializerMethodField()
+    image = serializers.ImageField(required=False, allow_null=True)
 
     def get_image_url(self, obj):
         request = self.context.get('request')
@@ -41,8 +42,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'id', 'name', 'description', 'initial_price', 'currency', 'currency_id',
-            'discount_amount', 'discounted_price', 'new_price', 'image_url',
+            'discount_amount', 'discounted_price', 'new_price','image', 'image_url',
             'tags', 'stock', 'category', 'category_id', 'seller',
             'seller_name', 'rating', 'reviews', 'created_at'
         ]
-
