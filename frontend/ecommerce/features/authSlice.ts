@@ -23,13 +23,18 @@ export const login = createAsyncThunk(
   ) => {
     try {
       const response = await API.login(credentials);
+
       const token = response.data.access;
+      const refreshToken = response.data.refresh;
       const role = response.data.role;
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("token", token);
+        localStorage.setItem("refreshToken", refreshToken);
+        localStorage.setItem("role", role);
+      }
 
-      return { token, role };
+      return { token, refreshToken, role };
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.detail || "Login failed"
@@ -38,24 +43,28 @@ export const login = createAsyncThunk(
   }
 );
 
+export const rehydrateAuth = createAsyncThunk("auth/rehydrate", async () => {
+  if (typeof window !== "undefined") {
+    return {
+      token: localStorage.getItem("token"),
+      role: localStorage.getItem("role"),
+    };
+  }
+  return { token: null, role: null };
+});
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    logout(state) {
+    logout: (state) => {
       state.token = null;
       state.role = null;
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
-    },
-    rehydrateAuth(state) {
-      const token = localStorage.getItem("token");
-      const role = localStorage.getItem("role");
-      if (token && role) {
-        state.token = token;
-        state.role = role;
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
       }
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -71,9 +80,13 @@ const authSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload as string;
+      })
+      .addCase(rehydrateAuth.fulfilled, (state, action) => {
+        state.token = action.payload.token;
+        state.role = action.payload.role;
       });
   },
 });
 
-export const { logout, rehydrateAuth } = authSlice.actions;
+export const { logout } = authSlice.actions;
 export default authSlice.reducer;

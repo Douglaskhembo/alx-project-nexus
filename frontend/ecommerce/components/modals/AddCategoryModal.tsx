@@ -1,4 +1,3 @@
-// components/modals/AddCategoryModal.tsx
 import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { toast } from "react-toastify";

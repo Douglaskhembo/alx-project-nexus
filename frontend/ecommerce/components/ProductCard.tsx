@@ -7,7 +7,13 @@ export interface Product {
   name: string;
   description: string;
   initial_price: number;
-  currency: string;
+  currency: {
+    id: number;
+    country_code: string;
+    country_name: string;
+    currency_code: string;
+    currency_name: string;
+  }
   discount_amount: number;
   new_price: number;
   image_url?: string | null;
@@ -77,11 +83,11 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="mt-auto">
           <div className="d-flex align-items-baseline mb-2">
             <span className="fs-5 fw-bold text-primary me-2">
-              {product.currency} {product.new_price ? Number(product.new_price).toFixed(2) : "0.00"}
+              {product.currency.currency_code} {product.new_price ? Number(product.new_price).toFixed(2) : "0.00"}
             </span>
             {product.discount_amount > 0 && (
               <span className="text-muted text-decoration-line-through">
-                {product.currency} {product.initial_price ? Number(product.initial_price).toFixed(2) : "0.00"}
+                {product.currency.currency_code} {product.initial_price ? Number(product.initial_price).toFixed(2) : "0.00"}
               </span>
             )}
           </div>

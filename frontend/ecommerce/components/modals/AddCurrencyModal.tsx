@@ -84,7 +84,7 @@ export default function AddCurrencyModal({ onClose }: AddCurrencyModalProps) {
                 <label style={{ width: "140px" }}>Country Code:</label>
                 <input
                   type="text"
-                  placeholder="KE"
+                  placeholder="+254"
                   className="form-control"
                   value={countryCode}
                   onChange={(e) => setCountryCode(e.target.value)}
@@ -108,7 +108,7 @@ export default function AddCurrencyModal({ onClose }: AddCurrencyModalProps) {
                 <label style={{ width: "140px" }}>Currency Name:</label>
                 <input
                   type="text"
-                  placeholder="Kenyan Shilling"
+                  placeholder="Kenya Shilling"
                   className="form-control"
                   value={currencyName}
                   onChange={(e) => setCurrencyName(e.target.value)}
