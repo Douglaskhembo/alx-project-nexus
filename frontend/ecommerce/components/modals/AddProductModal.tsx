@@ -37,7 +37,8 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
     try {
       if (categories.length === 0) {
         const res = await API.getAllCategories();
-        setCategories(res.data);
+        console.log("Categories API response:", res.data);
+        setCategories(res.data.results); // <-- FIX HERE
       }
     } catch (err) {
       console.error(err);

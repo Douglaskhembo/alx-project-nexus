@@ -15,44 +15,48 @@ const initialState: AuthState = {
   error: null,
 };
 
-
-
 export const login = createAsyncThunk(
   "auth/login",
-  async (credentials: { email: string; password: string }, { rejectWithValue }) => {
+  async (
+    credentials: { email: string; password: string },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await API.login(credentials);
       const token = response.data.access;
       const role = response.data.role;
+
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
+
       return { token, role };
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.detail || "Login failed");
+      return rejectWithValue(
+        error.response?.data?.detail || "Login failed"
+      );
     }
   }
 );
 
-
 const authSlice = createSlice({
   name: "auth",
   initialState,
-reducers: {
-  logout(state) {
-    state.token = null;
-    state.role = null;
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-  },
-  rehydrateAuth(state) {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
-    if (token && role) {
-      state.token = token;
-      state.role = role;
+  reducers: {
+    logout(state) {
+      state.token = null;
+      state.role = null;
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+    },
+    rehydrateAuth(state) {
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
+      if (token && role) {
+        state.token = token;
+        state.role = role;
+      }
     }
-  }
-},
+  },
   extraReducers: (builder) => {
     builder
       .addCase(login.pending, (state) => {
@@ -71,5 +75,5 @@ reducers: {
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, rehydrateAuth } = authSlice.actions;
 export default authSlice.reducer;
