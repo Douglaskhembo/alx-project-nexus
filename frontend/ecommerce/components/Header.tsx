@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { useAppSelector, useAppDispatch } from "../hooks";
 import { logout } from "../features/authSlice";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { FaUserPlus, FaBox, FaListAlt, FaDollarSign, FaSignOutAlt, FaUserCircle, FaKey } from "react-icons/fa";
 
 const LoginModal = dynamic(() => import("./modals/LoginModal"));
@@ -13,7 +13,11 @@ const AddCurrencyModal = dynamic(() => import("./modals/AddCurrencyModal"));
 const PasswordResetModal = dynamic(() => import("./modals/PasswordResetModal"));
 const ForgotPasswordModal = dynamic(() => import("./modals/ForgotPasswordModal"));
 
-export default function Header() {
+interface HeaderProps {
+  onToggleCart: () => void;
+}
+
+export default function Header({ onToggleCart }: HeaderProps) {
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector((state) => state.cart.items);
   const auth = useAppSelector((state) => state.auth);
@@ -27,7 +31,6 @@ export default function Header() {
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-
 
   useEffect(() => {
     setIsMounted(true);
@@ -66,10 +69,12 @@ export default function Header() {
           </div>
 
           <div className="d-flex align-items-center">
-            {/* Cart */}
-            <Link
-              href="/cart"
-              className="position-relative text-dark text-decoration-none p-2 mx-1"
+            {/* Cart button replaced Link with button and onToggleCart */}
+            <button
+              onClick={onToggleCart}
+              className="position-relative text-dark btn btn-link p-2 mx-1"
+              aria-label="Toggle Cart"
+              type="button"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -85,7 +90,7 @@ export default function Header() {
                   {cartCount}
                 </span>
               )}
-            </Link>
+            </button>
 
             {isMounted && auth.token ? (
               <div className="dropdown">

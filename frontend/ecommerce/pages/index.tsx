@@ -6,13 +6,16 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import SortSelect from "../components/SortSelect";
 import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
+import Cart from "../components/Cart";
 
 export default function Home() {
   const dispatch = useAppDispatch();
   const { items, status, page, hasMore, totalProducts } = useAppSelector((state) => state.products);
+  const cartItems = useAppSelector((state) => state.cart.items);
 
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState("newest");
+  const [showCart, setShowCart] = useState(false);
 
   useEffect(() => {
     dispatch(fetchProducts({ page: 1, filters, sort }));
@@ -28,42 +31,45 @@ export default function Home() {
 
   return (
     <>
-      <Header />
-      <div className="container-fluid pt-5 mt-5"> {/* mt-5 for fixed header */}
+      <Header onToggleCart={() => setShowCart((v) => !v)} />
+      <div className="container-fluid pt-5 mt-5">
         <div className="row">
           <Sidebar onFilterChange={setFilters} currentFilters={filters} />
           <main className="col-md-9 p-4">
-            <section>
-              {/* Product Catalog Header */}
-              <div className="mb-4">
-                <h2 className="h3 fw-bold">Product Catalog</h2>
-                <p className="text-muted">Discover amazing products at great prices</p>
-              </div>
-              {/* Sort & Product Count */}
-              <div className="d-flex justify-content-between align-items-center mb-4">
-                <span className="text-muted small">
-                  {totalProducts} products
-                </span>
-                <SortSelect value={sort} onChange={setSort} />
-              </div>
-              {/* Product Grid */}
-              <div className="row g-4">
-                {items.map((product, index) =>
-                  index === items.length - 1 ? (
-                    <div className="col-12 col-sm-6 col-lg-4" ref={lastProductRef} key={product.id}>
-                      <ProductCard product={product} />
-                    </div>
-                  ) : (
-                    <div className="col-12 col-sm-6 col-lg-4" key={product.id}>
-                      <ProductCard product={product} />
-                    </div>
-                  )
-                )}
-              </div>
-              {/* Loading and "No more products" messages */}
-              {status === "loading" && <p className="mt-4 text-center text-muted">Loading more...</p>}
-              {!hasMore && items.length > 0 && <p className="mt-4 text-center text-muted">No more products to show.</p>}
-            </section>
+            {showCart ? (
+              <Cart />
+            ) : (
+              <section>
+                {/* Product Catalog Header */}
+                <div className="mb-4">
+                  <h2 className="h3 fw-bold">Product Catalog</h2>
+                  <p className="text-muted">Discover amazing products at great prices</p>
+                </div>
+                {/* Sort & Product Count */}
+                <div className="d-flex justify-content-between align-items-center mb-4">
+                  <span className="text-muted small">
+                    {totalProducts} products
+                  </span>
+                  <SortSelect value={sort} onChange={setSort} />
+                </div>
+                {/* Product Grid */}
+                <div className="row g-4">
+                  {items.map((product, index) =>
+                    index === items.length - 1 ? (
+                      <div className="col-12 col-sm-6 col-lg-4" ref={lastProductRef} key={product.id}>
+                        <ProductCard product={product} />
+                      </div>
+                    ) : (
+                      <div className="col-12 col-sm-6 col-lg-4" key={product.id}>
+                        <ProductCard product={product} />
+                      </div>
+                    )
+                  )}
+                </div>
+                {status === "loading" && <p className="mt-4 text-center text-muted">Loading more...</p>}
+                {!hasMore && items.length > 0 && <p className="mt-4 text-center text-muted">No more products to show.</p>}
+              </section>
+            )}
           </main>
         </div>
       </div>

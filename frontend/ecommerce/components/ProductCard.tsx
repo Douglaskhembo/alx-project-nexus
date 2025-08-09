@@ -60,9 +60,10 @@ export default function ProductCard({ product }: ProductCardProps) {
       </Link>
 
       <div className="card-body d-flex flex-column">
-        <h5 className="card-title text-truncate">{product.name}</h5>
+        <h5 className="card-title">{product.name}</h5>
+        <p className="text-truncate card-description">{product.description}</p>
         {product.seller_name && (
-          <span className="text-muted me-2">
+          <span className="text-truncate me-2">
             seller: <strong>{product.seller_name}</strong>
           </span>
         )}

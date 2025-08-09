@@ -50,7 +50,18 @@
   }
 }
 
-
 .modal-dialog-upper {
   margin-top: 5vh;
+}
+
+.card-img-top {
+  max-height: 150px;
+  object-fit: contain;
+}
+
+.card-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
