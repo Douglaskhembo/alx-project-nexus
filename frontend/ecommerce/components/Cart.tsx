@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { removeFromCart, updateQuantity, clearCart } from "../features/cartSlice";
-import CheckoutModal from "./modals/CheckoutModal";  // adjust path if needed
+import CheckoutModal from "./modals/CheckoutModal";
 
 export default function Cart() {
   const { items } = useAppSelector((state) => state.cart);
