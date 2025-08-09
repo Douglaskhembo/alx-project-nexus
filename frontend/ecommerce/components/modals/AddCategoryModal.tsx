@@ -45,8 +45,8 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ show, onHide }) => 
       </Modal.Header>
       <Modal.Body>
         <form onSubmit={handleSubmit}>
-          <div className="form-group mb-3">
-            <label>Name</label>
+          <div className="mb-3 d-flex align-items-center gap-2">
+            <label style={{ width: "120px" }}>Name:</label>
             <input
               type="text"
               className="form-control"
@@ -56,8 +56,8 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ show, onHide }) => 
             />
           </div>
 
-          <div className="form-group mb-4">
-            <label>Description (optional)</label>
+          <div className="mb-3 d-flex align-items-center gap-2">
+            <label style={{ width: "120px" }}>Description:</label>
             <textarea
               className="form-control"
               value={categoryDescription}

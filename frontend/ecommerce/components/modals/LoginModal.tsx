@@ -5,9 +5,16 @@ import { login } from "../../features/authSlice";
 interface LoginModalProps {
   onClose: () => void;
   onSwitchToRegister: () => void;
+  onSwitchToForgotPassword: () => void;
 }
 
-export default function LoginModal({ onClose, onSwitchToRegister }: LoginModalProps) {
+export default function LoginModal({
+  onClose,
+  onSwitchToRegister,
+  onSwitchToForgotPassword,
+}: LoginModalProps) {
+  console.log("LoginModal props:", { onClose, onSwitchToRegister, onSwitchToForgotPassword });
+
   const dispatch = useAppDispatch();
   const { status, error } = useAppSelector((state) => state.auth);
 
@@ -23,18 +30,28 @@ export default function LoginModal({ onClose, onSwitchToRegister }: LoginModalPr
   };
 
   return (
-    <div className="modal fade show d-block" tabIndex={-1} role="dialog" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-      {/* Updated: Replaced modal-dialog-centered with modal-dialog-upper */}
+    <div
+      className="modal fade show d-block"
+      tabIndex={-1}
+      role="dialog"
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+    >
       <div className="modal-dialog modal-dialog-upper" role="document">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">Sign In</h5>
-            <button type="button" className="btn-close" aria-label="Close" onClick={onClose}></button>
+            <button
+              type="button"
+              className="btn-close"
+              aria-label="Close"
+              onClick={onClose}
+            ></button>
           </div>
           <div className="modal-body">
             {error && <p className="text-danger text-center">{error}</p>}
             <form onSubmit={handleSubmit}>
-              <div className="mb-3">
+              <div className="mb-3 d-flex align-items-center gap-2">
+                <label style={{ width: "120px" }}>Email:</label>
                 <input
                   type="email"
                   placeholder="Email"
@@ -44,7 +61,8 @@ export default function LoginModal({ onClose, onSwitchToRegister }: LoginModalPr
                   required
                 />
               </div>
-              <div className="mb-3">
+              <div className="mb-3 d-flex align-items-center gap-2">
+                <label style={{ width: "120px" }}>Password:</label>
                 <input
                   type="password"
                   placeholder="Password"
@@ -64,9 +82,16 @@ export default function LoginModal({ onClose, onSwitchToRegister }: LoginModalPr
             </form>
           </div>
           <div className="modal-footer d-flex justify-content-center flex-column">
-            <a href="#" className="text-decoration-none">
-              Forgot Password?
-            </a>
+          <a
+            href="#"
+            className="text-decoration-none"
+            onClick={(e) => {
+              e.preventDefault();
+              onSwitchToForgotPassword();
+            }}
+          >
+            Forgot Password?
+          </a>
             <p className="mt-2 mb-0">
               Don’t have an account?{" "}
               <button

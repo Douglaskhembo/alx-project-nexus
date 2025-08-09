@@ -111,8 +111,8 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
       </Modal.Header>
       <Modal.Body>
         <form onSubmit={handleSubmit} encType="multipart/form-data">
-          <div className="form-group mb-3">
-            <label>Name</label>
+          <div className="mb-3 d-flex align-items-center gap-2">
+            <label style={{ width: "120px" }}>Name:</label>
             <input
               type="text"
               className="form-control"
@@ -122,8 +122,8 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
             />
           </div>
 
-          <div className="form-group mb-3">
-            <label>Description</label>
+          <div className="mb-3 d-flex align-items-center gap-2">
+            <label style={{ width: "120px" }}>Description:</label>
             <textarea
               className="form-control"
               value={productDesc}
@@ -132,8 +132,8 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
             />
           </div>
 
-          <div className="form-group mb-3">
-            <label>Price</label>
+          <div className="mb-3 d-flex align-items-center gap-2">
+            <label style={{ width: "120px" }}>Price:</label>
             <input
               type="number"
               className="form-control"
@@ -143,8 +143,8 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
             />
           </div>
 
-          <div className="form-group mb-3">
-            <label>Stock Quantity</label>
+          <div className="mb-3 d-flex align-items-center gap-2">
+            <label style={{ width: "120px" }}>Stock Quantity:</label>
             <input
               type="number"
               className="form-control"
@@ -154,8 +154,8 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
             />
           </div>
 
-          <div className="form-group mb-3">
-            <label>Status</label>
+          <div className="mb-3 d-flex align-items-center gap-2">
+             <label style={{ width: "120px" }}>Status:</label>
             <select
               className="form-control"
               value={status}
@@ -167,8 +167,8 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
             </select>
           </div>
 
-          <div className="form-group mb-3">
-            <label>Tags (comma-separated)</label>
+          <div className="mb-3 d-flex align-items-center gap-2">
+             <label style={{ width: "120px" }}>Tags (comma-separated)</label>
             <input
               type="text"
               className="form-control"
@@ -177,8 +177,8 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
             />
           </div>
 
-          <div className="form-group mb-3">
-            <label>Category</label>
+          <div className="mb-3 d-flex align-items-center gap-2">
+            <label style={{ width: "120px" }}>Category:</label>
             <select
               className="form-control"
               value={categoryId}
@@ -194,10 +194,8 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
               ))}
             </select>
           </div>
-
-          {/* Currency dropdown */}
-          <div className="form-group mb-3">
-            <label>Currency</label>
+          <div className="mb-3 d-flex align-items-center gap-2">
+            <label style={{ width: "120px" }}>Currency:</label>
             <select
               className="form-control"
               value={currencyId}
@@ -214,7 +212,9 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
             </select>
           </div>
 
-          <div className="form-check mb-2">
+          <div className="mb-3 d-flex align-items-center gap-2">
+            <label className="form-check-label" htmlFor="enableDiscount" style={{ width: "120px" }} >
+              Enable Discount</label>
             <input
               type="checkbox"
               className="form-check-input"
@@ -222,14 +222,11 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
               checked={enableDiscount}
               onChange={(e) => setEnableDiscount(e.target.checked)}
             />
-            <label className="form-check-label" htmlFor="enableDiscount">
-              Enable Discount
-            </label>
           </div>
 
           {enableDiscount && (
-            <div className="form-group mb-3">
-              <label>Discount Amount</label>
+            <div className="mb-3 d-flex align-items-center gap-2">
+              <label style={{ width: "120px" }}>Discount Amount:</label>
               <input
                 type="number"
                 className="form-control"
@@ -239,8 +236,8 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
             </div>
           )}
 
-          <div className="form-group mb-4">
-            <label>Image</label>
+          <div className="mb-3 d-flex align-items-center gap-2">
+            <label style={{ width: "120px" }}>Image:</label>
             <input
               type="file"
               className="form-control"

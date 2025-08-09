@@ -11,6 +11,7 @@ const AddProductModal = dynamic(() => import("./modals/AddProductModal"));
 const AddCategoryModal = dynamic(() => import("./modals/AddCategoryModal"));
 const AddCurrencyModal = dynamic(() => import("./modals/AddCurrencyModal"));
 const PasswordResetModal = dynamic(() => import("./modals/PasswordResetModal"));
+const ForgotPasswordModal = dynamic(() => import("./modals/ForgotPasswordModal"));
 
 export default function Header() {
   const dispatch = useAppDispatch();
@@ -25,6 +26,8 @@ export default function Header() {
   const [showAddCurrency, setShowAddCurrency] = useState(false);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+
 
   useEffect(() => {
     setIsMounted(true);
@@ -140,7 +143,6 @@ export default function Header() {
                         </li>
                       </>
                     )}
-                    {/* ✅ Password Reset option */}
                     <li>
                       <button
                         className="dropdown-item d-flex align-items-center gap-2"
@@ -190,6 +192,10 @@ export default function Header() {
             setShowLogin(false);
             setShowRegister(true);
           }}
+          onSwitchToForgotPassword={() => {
+            setShowLogin(false);
+            setShowForgotPassword(true);
+          }}
         />
       )}
       {showRegister && (
@@ -214,6 +220,15 @@ export default function Header() {
       )}
       {showPasswordReset && (
         <PasswordResetModal onClose={() => setShowPasswordReset(false)} />
+      )}
+      {showForgotPassword && (
+        <ForgotPasswordModal
+          onClose={() => setShowForgotPassword(false)}
+          onSwitchToLogin={() => {
+            setShowForgotPassword(false);
+            setShowLogin(true);
+          }}
+        />
       )}
     </>
   );

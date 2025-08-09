@@ -10,7 +10,7 @@ interface RegisterModalProps {
 
 export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModalProps) {
   const auth = useAppSelector((state) => state.auth);
-  const isAdmin = auth?.user?.role === "ADMIN";
+  const isAdmin = auth?.role === "ADMIN";
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

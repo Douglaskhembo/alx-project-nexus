@@ -18,6 +18,16 @@ class APIConfig {
     return api.post(`${USERS_URL}/refresh/`, { refresh: refreshToken });
   }
 
+  // password management
+  sendForgotPasswordOTP(email: string) {
+  return publicApi.post(`${USERS_URL}/forgot-password/`, { email });
+  }
+
+  verifyOTPAndResetPassword(data: { email: string; otp: string; new_password: string }) {
+    return publicApi.post(`${USERS_URL}/forgot-password/verify/`, data);
+  }
+
+
   // Admin
   createSeller(sellerData: any) {
     return api.post(`${USERS_URL}/admin/create-seller/`, sellerData);

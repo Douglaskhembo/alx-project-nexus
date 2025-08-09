@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FaEnvelope, FaKey } from "react-icons/fa";
 import API from "@/services/apiConfig";
+import { useAppSelector } from "../../hooks";
 
 interface ForgotPasswordModalProps {
   onClose: () => void;
@@ -67,7 +68,7 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }: Forgot
             {step === 1 && (
               <form onSubmit={handleSendOTP}>
                 <div className="mb-3 d-flex align-items-center gap-2">
-                  <FaEnvelope className="text-muted" />
+                  <label style={{ width: "120px" }}>Email:</label>
                   <input
                     type="email"
                     placeholder="Enter your registered email"
