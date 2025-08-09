@@ -1,18 +1,23 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import API from "../../services/apiConfig";
+import { useAppSelector } from "../../hooks";
 
 interface RegisterModalProps {
   onClose: () => void;
   onSwitchToLogin?: () => void;
 }
 
-export default function RegisterModal({ onClose }: RegisterModalProps) {
+export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModalProps) {
+  const auth = useAppSelector((state) => state.auth);
+  const isAdmin = auth?.user?.role === "ADMIN";
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone_number, setPhoneNumber] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState(isAdmin ? "BUYER" : "BUYER");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -26,11 +31,10 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
         username,
         password,
         phone_number,
-        role: "BUYER",
+        role: isAdmin ? role : "BUYER",
       });
 
-      // Show popup message
-      toast.success("Account created successfully!", {
+      toast.success(isAdmin ? "User added successfully!" : "Account created successfully!", {
         autoClose: 2000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -38,15 +42,13 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
         draggable: false,
       });
 
-      // Clear form
       setName("");
       setEmail("");
       setUsername("");
       setPassword("");
       setPhoneNumber("");
+      setRole("BUYER");
       setError(null);
-
-      // Close modal
       onClose();
     } catch (err: any) {
       setError(err.response?.data?.detail || "Registration failed");
@@ -65,7 +67,7 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
       <div className="modal-dialog modal-dialog-upper" role="document">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">Register</h5>
+            <h5 className="modal-title">{isAdmin ? "Add User" : "Register"}</h5>
             <button type="button" className="btn-close" aria-label="Close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
@@ -115,6 +117,20 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
                   required
                 />
               </div>
+              {isAdmin && (
+                <div className="mb-3 d-flex align-items-center gap-2">
+                  <label style={{ width: "120px" }}>Role:</label>
+                  <select
+                    className="form-control"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                  >
+                    <option value="ADMIN">ADMIN</option>
+                    <option value="BUYER">BUYER</option>
+                    <option value="SELLER">SELLER</option>
+                  </select>
+                </div>
+              )}
               <div className="mb-3 d-flex align-items-center gap-2">
                 <label style={{ width: "120px" }}>Password:</label>
                 <input
@@ -131,21 +147,23 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
                 className="btn btn-primary w-100"
                 disabled={loading}
               >
-                {loading ? "Registering..." : "Register"}
+                {loading ? (isAdmin ? "Adding..." : "Registering...") : isAdmin ? "Add User" : "Register"}
               </button>
             </form>
           </div>
-          <div className="modal-footer d-flex justify-content-center">
-            Already have an account?{" "}
-            <button
-              type="button"
-              onClick={onClose}
-              className="btn btn-link p-0"
-              disabled={loading}
-            >
-              Sign In
-            </button>
-          </div>
+          {!isAdmin && (
+            <div className="modal-footer d-flex justify-content-center">
+              Already have an account?{" "}
+              <button
+                type="button"
+                onClick={onSwitchToLogin}
+                className="btn btn-link p-0"
+                disabled={loading}
+              >
+                Sign In
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
