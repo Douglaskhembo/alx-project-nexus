@@ -33,7 +33,7 @@ class User(AbstractUser):
     role = models.CharField(max_length=10, choices=Role.choices, default=Role.BUYER)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']  # Needed for AbstractUser
+    REQUIRED_FIELDS = ['username']
 
     objects = UserManager()
 

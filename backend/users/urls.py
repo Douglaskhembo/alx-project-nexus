@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import BuyerRegisterView, CreateSellerView, CustomTokenObtainPairView
+from .views import BuyerRegisterView, CreateSellerView, CustomTokenObtainPairView, PasswordResetView
 from rest_framework_simplejwt.views import TokenRefreshView
 from .views import SomeSellerView
 
@@ -9,5 +9,6 @@ urlpatterns = [
     path('login/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),  # custom JWT login
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('seller-only/', SomeSellerView.as_view(), name='seller-only'),# token refresh
+    path('password-reset/', PasswordResetView.as_view(), name='password-reset'),
 ]
 

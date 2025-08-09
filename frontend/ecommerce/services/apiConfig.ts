@@ -27,6 +27,9 @@ class APIConfig {
     return publicApi.post(`${USERS_URL}/forgot-password/verify/`, data);
   }
 
+  resetPassword(data: { current_password: string; new_password: string }) {
+  return api.post(`${USERS_URL}/password-reset/`, data);
+ }
 
   // Admin
   createSeller(sellerData: any) {
