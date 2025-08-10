@@ -47,7 +47,7 @@ export default function Cart() {
       payment_type: paymentOption,
       purchases: items.map((item) => ({
         product_id: item.id,
-        seller: item.seller_id ?? item.seller,
+        seller: item.id ?? item.name,
         price: Number(item.new_price ?? item.price),
         quantity: item.quantity,
       })),
