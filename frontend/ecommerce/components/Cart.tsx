@@ -13,7 +13,7 @@ export default function Cart() {
   const [loading, setLoading] = useState(false);
 
   const total = items.reduce(
-    (sum, item) => sum + (Number(item.new_price ?? item.price) || 0) * item.quantity,
+    (sum, item) => sum + (Number(item.new_price ?? item.initial_price) || 0) * item.quantity,
     0
   );
 
@@ -47,26 +47,19 @@ export default function Cart() {
       payment_type: paymentOption,
       purchases: items.map((item) => ({
         product_id: item.id,
-        seller: item.id ?? item.name,
-        price: Number(item.new_price ?? item.price),
+        seller_id: item.seller,
+        price: Number(item.new_price ?? item.initial_price),
         quantity: item.quantity,
       })),
     };
 
-    console.log("Sending Order Payload:", JSON.stringify(orderData, null, 2));
-
     try {
       setLoading(true);
-
       const response = await API.placeOrder(orderData);
-
-      console.log("Server Response:", response.data);
-
       alert(`Order placed successfully! Order Code: ${response.data.order_code}`);
       dispatch(clearCart());
       setIsCheckoutOpen(false);
     } catch (err: any) {
-      console.error("Error placing order:", err);
       alert(err.response?.data?.detail || err.message || "Something went wrong while placing the order");
     } finally {
       setLoading(false);
@@ -95,13 +88,13 @@ export default function Cart() {
               </thead>
               <tbody>
                 {items.map((item) => {
-                  const price = Number(item.new_price ?? item.price) || 0;
+                  const price = Number(item.new_price ?? item.initial_price) || 0;
                   const currencyCode = item.currency?.currency_code ?? "$";
 
                   return (
                     <tr key={item.id}>
                       <td>{item.name}</td>
-                      <td>{item.seller ?? "N/A"}</td>
+                      <td>{item.seller_name ?? "N/A"}</td>
                       <td className="text-center">{item.quantity}</td>
                       <td className="text-end">
                         {currencyCode} {price.toFixed(2)}
