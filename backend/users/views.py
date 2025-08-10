@@ -14,6 +14,8 @@ from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import status
+import random
+from django.core.cache import cache
 
 
 class RegisterUserView(generics.CreateAPIView):
@@ -91,7 +93,7 @@ class PasswordResetView(APIView):
             subject="Your password has been changed",
             message=(
                 f"Dear {user.name},\n\n"
-                "Your account password has been successfully changed. "
+                "Your NexusMarket account password has been successfully changed. "
                 "If you did not perform this action, please contact support immediately."
             ),
             from_email=settings.DEFAULT_FROM_EMAIL,
@@ -100,3 +102,58 @@ class PasswordResetView(APIView):
         )
 
         return Response({"detail": "Password updated successfully."}, status=status.HTTP_200_OK)
+
+
+class ForgotPasswordRequestView(APIView):
+    permission_classes = []  # public
+
+    def post(self, request):
+        email = request.data.get("email")
+        if not email:
+            return Response({"detail": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"detail": "No account found with that email."}, status=status.HTTP_404_NOT_FOUND)
+
+        otp = random.randint(100000, 999999)
+        cache.set(f"forgot_password_otp_{email}", str(otp), timeout=300)  # 5 min expiry
+
+        send_mail(
+            subject="Your NexusMarket Password Reset OTP",
+            message=f"Hello {user.name},\n\nYour OTP is: {otp}\nIt will expire in 5 minutes.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+            fail_silently=False,
+        )
+
+        return Response({"detail": "OTP sent to your email."}, status=status.HTTP_200_OK)
+
+
+class ForgotPasswordVerifyView(APIView):
+    permission_classes = []  # public
+
+    def post(self, request):
+        email = request.data.get("email")
+        otp = request.data.get("otp")
+        new_password = request.data.get("new_password")
+
+        if not all([email, otp, new_password]):
+            return Response({"detail": "Email, OTP, and new password are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        cached_otp = cache.get(f"forgot_password_otp_{email}")
+        if cached_otp is None or cached_otp != otp:
+            return Response({"detail": "Invalid or expired OTP."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        user.set_password(new_password)
+        user.save()
+
+        cache.delete(f"forgot_password_otp_{email}")
+
+        return Response({"detail": "Password reset successful."}, status=status.HTTP_200_OK)

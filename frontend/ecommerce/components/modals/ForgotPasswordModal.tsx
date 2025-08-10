@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { FaEnvelope, FaKey } from "react-icons/fa";
 import API from "@/services/apiConfig";
-import { useAppSelector } from "../../hooks";
 
 interface ForgotPasswordModalProps {
   onClose: () => void;
@@ -26,7 +25,9 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }: Forgot
       setStep(2);
     } catch (err: any) {
       console.error(err);
-      setError("Failed to send OTP. Please check the email and try again.");
+      setError(
+        err.response?.data?.detail || "Failed to send OTP. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -46,14 +47,21 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }: Forgot
       onSwitchToLogin();
     } catch (err: any) {
       console.error(err);
-      setError("Invalid OTP or password reset failed. Please try again.");
+      setError(
+        err.response?.data?.detail || "Invalid OTP or password reset failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="modal fade show d-block" tabIndex={-1} role="dialog" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+    <div
+      className="modal fade show d-block"
+      tabIndex={-1}
+      role="dialog"
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+    >
       <div className="modal-dialog modal-dialog-upper" role="document">
         <div className="modal-content">
           <div className="modal-header">
@@ -78,11 +86,7 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }: Forgot
                     required
                   />
                 </div>
-                <button
-                  type="submit"
-                  className="btn btn-primary w-100"
-                  disabled={loading}
-                >
+                <button type="submit" className="btn btn-primary w-100" disabled={loading}>
                   {loading ? "Sending..." : "Send OTP"}
                 </button>
               </form>
@@ -112,11 +116,7 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }: Forgot
                     required
                   />
                 </div>
-                <button
-                  type="submit"
-                  className="btn btn-success w-100"
-                  disabled={loading}
-                >
+                <button type="submit" className="btn btn-success w-100" disabled={loading}>
                   {loading ? "Resetting..." : "Reset Password"}
                 </button>
               </form>
