@@ -2,12 +2,15 @@ import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { removeFromCart, updateQuantity, clearCart } from "../features/cartSlice";
 import CheckoutModal from "./modals/CheckoutModal";
+import API from "../services/apiConfig";
 
 export default function Cart() {
   const { items } = useAppSelector((state) => state.cart);
+  const auth = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const total = items.reduce(
     (sum, item) => sum + (Number(item.new_price ?? item.price) || 0) * item.quantity,
@@ -28,12 +31,46 @@ export default function Cart() {
     }
   };
 
-  const handlePlaceOrder = (deliveryLocation: string, landmark: string, paymentOption: string) => {
-    alert(
-      `Order placed!\nDelivery Location: ${deliveryLocation}\nLandmark: ${landmark}\nPayment: ${paymentOption}`
-    );
-    dispatch(clearCart());
-    setIsCheckoutOpen(false);
+  const handlePlaceOrder = async (
+    deliveryLocation: string,
+    landmark: string,
+    paymentOption: string
+  ) => {
+    if (!auth.role || auth.role !== "BUYER") {
+      alert("You need to log in to place an order.");
+      return;
+    }
+
+    const orderData = {
+      delivery_location: deliveryLocation,
+      landmark: landmark,
+      payment_type: paymentOption,
+      purchases: items.map((item) => ({
+        product_id: item.id,
+        seller: item.seller_id ?? item.seller,
+        price: Number(item.new_price ?? item.price),
+        quantity: item.quantity,
+      })),
+    };
+
+    console.log("Sending Order Payload:", JSON.stringify(orderData, null, 2));
+
+    try {
+      setLoading(true);
+
+      const response = await API.placeOrder(orderData);
+
+      console.log("Server Response:", response.data);
+
+      alert(`Order placed successfully! Order Code: ${response.data.order_code}`);
+      dispatch(clearCart());
+      setIsCheckoutOpen(false);
+    } catch (err: any) {
+      console.error("Error placing order:", err);
+      alert(err.response?.data?.detail || err.message || "Something went wrong while placing the order");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -116,14 +153,16 @@ export default function Cart() {
             <button
               onClick={() => dispatch(clearCart())}
               className="btn btn-success"
+              disabled={loading}
             >
               Clear Cart
             </button>
             <button
               onClick={() => setIsCheckoutOpen(true)}
               className="btn btn-primary"
+              disabled={loading}
             >
-              Checkout
+              {loading ? "Processing..." : "Checkout"}
             </button>
           </div>
 

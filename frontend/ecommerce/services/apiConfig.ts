@@ -18,9 +18,9 @@ class APIConfig {
     return api.post(`${USERS_URL}/refresh/`, { refresh: refreshToken });
   }
 
-  // password management
+  // Password management
   sendForgotPasswordOTP(email: string) {
-  return publicApi.post(`${USERS_URL}/forgot-password/`, { email });
+    return publicApi.post(`${USERS_URL}/forgot-password/`, { email });
   }
 
   verifyOTPAndResetPassword(data: { email: string; otp: string; new_password: string }) {
@@ -28,8 +28,8 @@ class APIConfig {
   }
 
   resetPassword(data: { current_password: string; new_password: string }) {
-  return api.post(`${USERS_URL}/password-reset/`, data);
- }
+    return api.post(`${USERS_URL}/password-reset/`, data);
+  }
 
   // Admin
   createSeller(sellerData: any) {
@@ -45,6 +45,7 @@ class APIConfig {
   createCurrency(currencyData: any) {
     return api.post(`${PRODUCTS_URL}/currencies/`, currencyData);
   }
+
   getAllCurrencies() {
     return api.get(`${PRODUCTS_URL}/currencies/`);
   }
@@ -71,6 +72,11 @@ class APIConfig {
     return api.post(`${PRODUCTS_URL}/categories/`, categoryData);
   }
 
+  // Orders
+  placeOrder(orderData: any) {
+    console.log("Sending Order Payload:", JSON.stringify(orderData, null, 2));
+    return api.post(`${PRODUCTS_URL}/orders/`, orderData);
+  }
 
   // Cart
   addToCart(data: any) {
@@ -82,13 +88,12 @@ class APIConfig {
   }
 
   addProduct(data: FormData) {
-  return api.post(`${PRODUCTS_URL}/products/`, data, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-}
-
+    return api.post(`${PRODUCTS_URL}/products/`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  }
 }
 
 export default new APIConfig();

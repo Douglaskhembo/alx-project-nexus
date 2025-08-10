@@ -15,11 +15,8 @@ export default function CheckoutModal({ show, onHide, onPlaceOrder }: CheckoutMo
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // You can add validation here if needed
-
     onPlaceOrder(deliveryLocation, landmark, paymentOption);
-
-    // Reset form after placing order
+    // Reset form fields after placing order
     setDeliveryLocation("");
     setLandmark("");
     setPaymentOption("cash");
