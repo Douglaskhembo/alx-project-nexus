@@ -19,7 +19,7 @@ export default function Cart() {
 
   const handleDecrease = (id: number, quantity: number) => {
     if (quantity > 1) {
-      dispatch(updateQuantity({ id, quantity: quantity - 1 }));
+      dispatch(updateQuantity({ id, quantity: (quantity - 1).toString() }));
     } else {
       dispatch(removeFromCart(id));
     }
@@ -27,7 +27,7 @@ export default function Cart() {
 
   const handleIncrease = (id: number, quantity: number, stock: number) => {
     if (quantity < stock) {
-      dispatch(updateQuantity({ id, quantity: quantity + 1 }));
+      dispatch(updateQuantity({ id, quantity: (quantity + 1).toString() }));
     }
   };
 
