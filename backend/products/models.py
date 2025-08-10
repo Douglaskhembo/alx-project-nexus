@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+from django.utils import timezone
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -68,6 +69,62 @@ class Cart(models.Model):
             )
         ]
 
+class Order(models.Model):
+    PAYMENT_CHOICES = [
+        ('cash', 'Cash'),
+        ('card', 'Card'),
+        ('mobile', 'Mobile Money'),
+    ]
 
+    DELIVERY_STATUS_CHOICES = [
+        ('DELIVERED', 'Delivered'),
+        ('PENDING', 'Pending'),
+        ('SHIPPED', 'Shipped'),
+        ('RETURN', 'Return'),
+    ]
+
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    order_code = models.CharField(max_length=50, unique=True, editable=False)
+    payment_type = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default='cash')
+    order_date = models.DateTimeField(auto_now_add=True)
+    delivery_date = models.DateTimeField(null=True, blank=True)
+    delivery_location = models.CharField(max_length=255)
+    landmark = models.CharField(max_length=255)
+    payment_status = models.BooleanField(default=False)
+    delivery_status = models.CharField(max_length=20, choices=DELIVERY_STATUS_CHOICES, default='PENDING')
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+
+    def save(self, *args, **kwargs):
+        if not self.order_code:
+            today_str = timezone.now().strftime("%Y%m%d")
+            buyer_id = self.buyer.id
+            count_today = Order.objects.filter(
+                order_date__date=timezone.now().date(),
+                buyer_id=buyer_id
+            ).count() + 1
+            self.order_code = f"NEXM-{today_str}-{buyer_id}/{str(count_today).zfill(3)}"
+
+        super().save(*args, **kwargs)
+
+    def update_total(self):
+        total = self.purchases.aggregate(
+            total_sum=Sum(models.F('price') * models.F('quantity'))
+        )['total_sum'] or 0
+        self.total_amount = total
+        self.save()
+
+    def __str__(self):
+        return self.order_code
+
+
+class Purchase(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='purchases')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='sales')
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.product.name} x {self.quantity} for Order {self.order.order_code}"
 
 

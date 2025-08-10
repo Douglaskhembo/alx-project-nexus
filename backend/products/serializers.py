@@ -1,7 +1,17 @@
 from rest_framework import serializers
-from .models import Product, Category, Currency
+from .models import Product, Category, Currency,Order, Purchase
 from rest_framework.reverse import reverse
 from users.models import User
+from django.conf import settings
+from django.db import transaction
+from decimal import Decimal
+from django.core.mail import EmailMessage
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+import io
+import qrcode
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -46,3 +56,128 @@ class ProductSerializer(serializers.ModelSerializer):
             'tags', 'stock', 'category', 'category_id', 'seller',
             'seller_name', 'rating', 'reviews', 'created_at'
         ]
+
+class PurchaseSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+    product_id = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(), source='product', write_only=True
+    )
+
+    class Meta:
+        model = Purchase
+        fields = ['id', 'product', 'product_id', 'seller', 'price', 'quantity']
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    purchases = PurchaseSerializer(many=True)
+    buyer = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Order
+        fields = [
+            'id', 'order_code', 'buyer', 'payment_type', 'order_date',
+            'delivery_date', 'delivery_location', 'landmark',
+            'payment_status', 'delivery_status', 'total_amount', 'purchases'
+        ]
+        read_only_fields = ['order_code', 'order_date', 'total_amount']
+
+    def create(self, validated_data):
+        purchases_data = validated_data.pop('purchases', [])
+
+        with transaction.atomic():
+            order = Order.objects.create(**validated_data)
+
+            total_sum = Decimal('0.00')
+            for purchase_data in purchases_data:
+                product = purchase_data['product']
+                price = purchase_data.get('price', product.new_price)
+                quantity = purchase_data.get('quantity', 1)
+                total_sum += price * quantity
+                Purchase.objects.create(order=order, **purchase_data)
+
+            order.total_amount = total_sum
+            order.save()
+
+            # Generate PDF and send email
+            self._send_order_email(order)
+
+        return order
+
+    def _send_order_email(self, order):
+        buffer = io.BytesIO()
+
+        # --- Generate QR Code in memory ---
+        qr = qrcode.make(order.order_code)
+        qr_buffer = io.BytesIO()
+        qr.save(qr_buffer, format="PNG")
+        qr_buffer.seek(0)
+
+        # --- PDF Generation ---
+        doc = SimpleDocTemplate(buffer, pagesize=A4)
+        styles = getSampleStyleSheet()
+        elements = []
+
+        # Title
+        elements.append(Paragraph("NexusMarket", styles['Title']))
+        elements.append(Paragraph(f"Order Invoice - {order.order_code}", styles['Title']))
+        elements.append(Spacer(1, 12))
+
+        # Order Info
+        elements.append(Paragraph(f"Order Code: {order.order_code}", styles['Normal']))
+        elements.append(Paragraph(f"Order Date: {order.order_date.strftime('%Y-%m-%d %H:%M')}", styles['Normal']))
+        elements.append(Paragraph(f"Delivery Location: {order.delivery_location}", styles['Normal']))
+        elements.append(Paragraph(f"Landmark: {order.landmark}", styles['Normal']))
+        elements.append(Spacer(1, 12))
+
+        # QR Code image (from memory)
+        elements.append(Image(qr_buffer, width=80, height=80))
+        elements.append(Spacer(1, 12))
+
+        # Table Header
+        data = [["Product", "Quantity", "Price per Quantity", "Seller"]]
+
+        # Table Rows
+        for purchase in order.purchases.all():
+            data.append([
+                purchase.product.name,
+                str(purchase.quantity),
+                f"{purchase.price:.2f}",
+                purchase.seller.name if purchase.seller else "N/A"
+            ])
+
+        # Totals
+        data.append(["Total", "", f"{order.total_amount:.2f}"])
+
+        # Table Styling
+        table = Table(data, colWidths=[150, 80, 120, 120])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (1, 1), (-1, -1), 'CENTER'),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ]))
+        elements.append(table)
+
+        doc.build(elements)
+
+        # Email with PDF attachment
+        pdf_value = buffer.getvalue()
+        buffer.close()
+
+        email = EmailMessage(
+            subject=f"Your Order Invoice - {order.order_code}",
+            body=(
+                f"Dear {order.buyer.name},\n\n"
+                f"Please find attached the invoice for your order {order.order_code}.\n"
+                f"Delivery Location: {order.delivery_location}\n"
+                f"Landmark: {order.landmark} \n\n"
+                f"Regards, \n"
+                f"NexusMarket Order Department"
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[order.buyer.email],
+        )
+        email.attach(f"invoice_{order.order_code}.pdf", pdf_value, "application/pdf")
+        email.send()
+

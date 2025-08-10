@@ -1,6 +1,6 @@
-from rest_framework import viewsets, filters
-from .models import Product, Category, Currency
-from .serializers import ProductSerializer, CategorySerializer, CurrencySerializer
+from rest_framework import viewsets, filters, permissions, generics
+from .models import Product, Category, Currency, Order
+from .serializers import ProductSerializer, CategorySerializer, CurrencySerializer, OrderSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.views import APIView
@@ -101,3 +101,18 @@ class DeleteProductView(DestroyAPIView):
         else:
             raise PermissionDenied("You do not have permission to delete this product.")
 
+
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all().order_by('-order_date')
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.role == 'ADMIN':
+            return Order.objects.all()
+        return Order.objects.filter(buyer=self.request.user)
+
+class OrderCreateView(generics.CreateAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]

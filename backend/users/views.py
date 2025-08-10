@@ -92,9 +92,11 @@ class PasswordResetView(APIView):
         send_mail(
             subject="Your password has been changed",
             message=(
-                f"Dear {user.name},\n\n"
-                "Your NexusMarket account password has been successfully changed. "
-                "If you did not perform this action, please contact support immediately."
+                f"Dear {user.name},\n"
+                f"Your NexusMarket account password has been successfully changed.\n"
+                f"If you did not perform this action, please contact support immediately. \n\n"
+                f"Regards, \n"
+                f"NexusMarket admin Department"
             ),
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],
@@ -122,7 +124,12 @@ class ForgotPasswordRequestView(APIView):
 
         send_mail(
             subject="Your NexusMarket Password Reset OTP",
-            message=f"Hello {user.name},\n\nYour OTP is: {otp}\nIt will expire in 5 minutes.",
+            message=(f"Dear {user.name},\n\n"
+                     f"Your OTP is: {otp}\n"
+                     f"It will expire in 5 minutes.\n\n"
+                     f"Regards, \n"
+                     f"NexusMarket admin Department"
+                     ),
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[email],
             fail_silently=False,
