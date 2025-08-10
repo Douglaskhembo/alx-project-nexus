@@ -16,12 +16,13 @@ const initialState: ProductsState = {
 
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
-  async () => {
-    const response = await apiConfig.getAllProducts();
+  async (params: { page?: number; filters?: any; sort?: string; search?: string }) => {
+    const response = await apiConfig.getAllProducts(params);
     console.log("Fetched products:", response.data);
     return response.data;
   }
 );
+
 
 const productsSlice = createSlice({
   name: "products",

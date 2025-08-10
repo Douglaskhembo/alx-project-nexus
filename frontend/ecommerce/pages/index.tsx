@@ -57,11 +57,6 @@ export default function Home() {
                   <h2 className="h3 fw-bold">Product Catalog</h2>
                   <p className="text-muted">Discover amazing products at great prices</p>
                 </div>
-                {/* Sort & Product Count */}
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                  <span className="text-muted small">{totalProducts} products</span>
-                  <SortSelect value={sort} onChange={setSort} />
-                </div>
                 {/* Product Grid */}
                 <div className="row g-4">
                   {items.map((product, index) =>

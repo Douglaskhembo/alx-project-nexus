@@ -48,16 +48,6 @@ export default function Sidebar({ onFilterChange, currentFilters }: any) {
       </div>
 
       {error && <div className="alert alert-danger">{error}</div>}
-
-      <div className="mb-4">
-        <h6 className="fw-bold">Search Products</h6>
-        <input
-          type="text"
-          placeholder="Search by name, brand, or description..."
-          className="form-control"
-        />
-      </div>
-
       <div className="form-group mb-3">
         <label>Category</label>
         <select
@@ -74,40 +64,6 @@ export default function Sidebar({ onFilterChange, currentFilters }: any) {
             </option>
           ))}
         </select>
-      </div>
-
-      <div className="mb-4">
-        <h6 className="fw-bold">Price Range</h6>
-        <div className="d-flex gap-2">
-          <input
-            type="number"
-            placeholder="Min"
-            className="form-control"
-            value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
-            onBlur={handlePriceChange}
-          />
-          <input
-            type="number"
-            placeholder="Max"
-            className="form-control"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-            onBlur={handlePriceChange}
-          />
-        </div>
-      </div>
-
-      <div className="form-check">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          checked={inStockOnly}
-          onChange={(e) => setInStockOnly(e.target.checked)}
-        />
-        <label className="form-check-label">
-          In Stock Only
-        </label>
       </div>
     </div>
   );

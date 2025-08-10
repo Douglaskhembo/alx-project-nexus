@@ -1,6 +1,6 @@
 import { useAppSelector, useAppDispatch } from "../hooks";
 import { logout } from "../features/authSlice";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
@@ -12,6 +12,7 @@ import {
   FaUserCircle,
   FaKey,
 } from "react-icons/fa";
+import { fetchProducts } from "../features/productsSlice";
 
 const LoginModal = dynamic(() => import("./modals/LoginModal"));
 const RegisterModal = dynamic(() => import("./modals/RegisterModal"));
@@ -31,6 +32,9 @@ export default function Header({ onToggleCart, onTogglePurchases }: HeaderProps)
   const cartItems = useAppSelector((state) => state.cart.items);
   const auth = useAppSelector((state) => state.auth);
   const [isMounted, setIsMounted] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
@@ -49,6 +53,19 @@ export default function Header({ onToggleCart, onTogglePurchases }: HeaderProps)
     } else {
       setShowLogin(true);
     }
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+
+    debounceTimeout.current = setTimeout(() => {
+      dispatch(fetchProducts({ page: 1, filters: {}, sort: "newest", search: value }));
+    }, 300);
   };
 
   useEffect(() => {
@@ -80,7 +97,14 @@ export default function Header({ onToggleCart, onTogglePurchases }: HeaderProps)
           </Link>
 
           <div className="d-flex flex-grow-1 mx-lg-4">
-            <input type="text" placeholder="Search products..." className="form-control" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              className="form-control"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              autoComplete="off"
+            />
           </div>
 
           <div className="d-flex align-items-center">

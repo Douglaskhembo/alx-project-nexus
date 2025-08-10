@@ -44,12 +44,6 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="card shadow-sm h-100 position-relative">
-      {/* {product.discount_amount > 0 && (
-        <span className="badge bg-danger position-absolute top-0 start-0 m-2">
-          -{product.discount_amount}
-        </span>
-      )} */}
-
       <Link href={`/product/${product.id}`}>
         <img
           src={product.image_url || "/placeholder.png"}
@@ -86,6 +80,8 @@ export default function ProductCard({ product }: ProductCardProps) {
             <span className="fs-5 fw-bold text-primary me-2">
               {product.currency.currency_code} {product.new_price ? Number(product.new_price).toFixed(2) : "0.00"}
             </span>
+          </div>
+          <div className="d-flex align-items-baseline mb-2">
             {product.discount_amount > 0 && (
               <span className="text-muted text-decoration-line-through">
                 {product.currency.currency_code} {product.initial_price ? Number(product.initial_price).toFixed(2) : "0.00"}

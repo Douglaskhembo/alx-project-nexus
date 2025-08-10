@@ -8,7 +8,7 @@ interface Purchase {
   order_code: string;
   product: string;
   quantity: number;
-  price: number;
+  price: number | string;  // Accept string too in case API sends price as string
   order_date: string;
   order_status: string;
   delivery_location: string;
@@ -42,7 +42,7 @@ export default function Purchases() {
   }, []);
 
   const totalAmount = purchases.reduce(
-    (sum, p) => sum + p.price * p.quantity,
+    (sum, p) => sum + (Number(p.price) || 0) * p.quantity,
     0
   );
 
@@ -76,7 +76,7 @@ export default function Purchases() {
                 <td>{p.order_code}</td>
                 <td>{p.product}</td>
                 <td className="text-center">{p.quantity}</td>
-                <td className="text-end">{p.price.toFixed(2)}</td>
+                <td className="text-end">{(Number(p.price) || 0).toFixed(2)}</td>
                 <td>{new Date(p.order_date).toLocaleString()}</td>
                 <td>{p.order_status}</td>
                 <td>{p.delivery_location}</td>
