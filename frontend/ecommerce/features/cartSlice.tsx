@@ -28,20 +28,20 @@ const cartSlice = createSlice({
       }
       localStorage.setItem("cart", JSON.stringify(state.items));
     },
-    removeFromCart(state, action: PayloadAction<string>) {
-      state.items = state.items.filter((i) => i.id !== action.payload);
-      localStorage.setItem("cart", JSON.stringify(state.items));
-    },
-    updateQuantity(
-      state,
-      action: PayloadAction<{ id: string; quantity: number }>
-    ) {
-      const item = state.items.find((i) => i.id === action.payload.id);
-      if (item) {
-        item.quantity = action.payload.quantity;
-      }
-      localStorage.setItem("cart", JSON.stringify(state.items));
-    },
+    removeFromCart(state, action: PayloadAction<number>) {
+  state.items = state.items.filter((i) => i.id !== action.payload);
+  localStorage.setItem("cart", JSON.stringify(state.items));
+},
+  updateQuantity(
+    state,
+    action: PayloadAction<{ id: number; quantity: number }>
+  ) {
+    const item = state.items.find((i) => i.id === action.payload.id);
+    if (item) {
+      item.quantity = action.payload.quantity;
+    }
+    localStorage.setItem("cart", JSON.stringify(state.items));
+  },
     clearCart(state) {
       state.items = [];
       localStorage.setItem("cart", JSON.stringify(state.items));
