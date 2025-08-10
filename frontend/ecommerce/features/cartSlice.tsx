@@ -3,6 +3,7 @@ import { Product } from "../types";
 
 interface CartItem extends Product {
   quantity: number;
+  new_price?: number;
 }
 
 interface CartState {
