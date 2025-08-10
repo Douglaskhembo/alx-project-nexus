@@ -7,15 +7,16 @@ import Header from "../components/Header";
 import SortSelect from "../components/SortSelect";
 import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
 import Cart from "../components/Cart";
+import Purchases from "../components/Purchases";
 
 export default function Home() {
   const dispatch = useAppDispatch();
   const { items, status, page, hasMore, totalProducts } = useAppSelector((state) => state.products);
-  const cartItems = useAppSelector((state) => state.cart.items);
 
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState("newest");
   const [showCart, setShowCart] = useState(false);
+  const [showPurchases, setShowPurchases] = useState(false);
 
   useEffect(() => {
     dispatch(fetchProducts({ page: 1, filters, sort }));
@@ -31,13 +32,24 @@ export default function Home() {
 
   return (
     <>
-      <Header onToggleCart={() => setShowCart((v) => !v)} />
+      <Header
+        onToggleCart={() => {
+          setShowCart((v) => !v);
+          setShowPurchases(false);
+        }}
+        onTogglePurchases={() => {
+          setShowPurchases((v) => !v);
+          setShowCart(false);
+        }}
+      />
       <div className="container-fluid pt-5 mt-5">
         <div className="row">
           <Sidebar onFilterChange={setFilters} currentFilters={filters} />
           <main className="col-md-9 p-4">
             {showCart ? (
               <Cart />
+            ) : showPurchases ? (
+              <Purchases />
             ) : (
               <section>
                 {/* Product Catalog Header */}
@@ -47,16 +59,18 @@ export default function Home() {
                 </div>
                 {/* Sort & Product Count */}
                 <div className="d-flex justify-content-between align-items-center mb-4">
-                  <span className="text-muted small">
-                    {totalProducts} products
-                  </span>
+                  <span className="text-muted small">{totalProducts} products</span>
                   <SortSelect value={sort} onChange={setSort} />
                 </div>
                 {/* Product Grid */}
                 <div className="row g-4">
                   {items.map((product, index) =>
                     index === items.length - 1 ? (
-                      <div className="col-12 col-sm-6 col-lg-4" ref={lastProductRef} key={product.id}>
+                      <div
+                        className="col-12 col-sm-6 col-lg-4"
+                        ref={lastProductRef}
+                        key={product.id}
+                      >
                         <ProductCard product={product} />
                       </div>
                     ) : (
@@ -66,8 +80,12 @@ export default function Home() {
                     )
                   )}
                 </div>
-                {status === "loading" && <p className="mt-4 text-center text-muted">Loading more...</p>}
-                {!hasMore && items.length > 0 && <p className="mt-4 text-center text-muted">No more products to show.</p>}
+                {status === "loading" && (
+                  <p className="mt-4 text-center text-muted">Loading more...</p>
+                )}
+                {!hasMore && items.length > 0 && (
+                  <p className="mt-4 text-center text-muted">No more products to show.</p>
+                )}
               </section>
             )}
           </main>

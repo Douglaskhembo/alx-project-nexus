@@ -1,6 +1,7 @@
 from rest_framework import viewsets, filters, permissions, generics
-from .models import Product, Category, Currency, Order
-from .serializers import ProductSerializer, CategorySerializer, CurrencySerializer, OrderSerializer
+from .models import Product, Category, Currency, Order,Purchase
+from .serializers import (ProductSerializer, CategorySerializer, CurrencySerializer,
+                          OrderSerializer,PurchaseDetailSerializer)
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.views import APIView
@@ -116,3 +117,18 @@ class OrderCreateView(generics.CreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+class SellerPurchasesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        if user.role == 'ADMIN':
+            purchases = Purchase.objects.select_related('order__buyer', 'product', 'seller', 'order').all()
+        elif user.role == 'SELLER':
+            purchases = Purchase.objects.select_related('order__buyer', 'product', 'seller', 'order').filter(seller=user)
+        else:
+            return Response({"detail": "Not authorized."}, status=403)
+
+        serializer = PurchaseDetailSerializer(purchases, many=True)
+        return Response(serializer.data)

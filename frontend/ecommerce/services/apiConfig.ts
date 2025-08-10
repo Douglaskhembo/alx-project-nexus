@@ -72,6 +72,11 @@ class APIConfig {
     return api.post(`${PRODUCTS_URL}/categories/`, categoryData);
   }
 
+    // Purchases (for seller/admin)
+  getSellerPurchases(params = {}) {
+    return api.get(`${PRODUCTS_URL}/seller-purchases/`, { params });
+  }
+
   // Orders
   placeOrder(orderData: any) {
     console.log("Sending Order Payload:", JSON.stringify(orderData, null, 2));

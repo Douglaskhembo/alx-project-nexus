@@ -197,3 +197,20 @@ class OrderSerializer(serializers.ModelSerializer):
         email.attach(f"invoice_{order.order_code}.pdf", pdf_value, "application/pdf")
         email.send()
 
+class PurchaseDetailSerializer(serializers.ModelSerializer):
+    buyer_name = serializers.CharField(source='order.buyer.name', read_only=True)
+    order_code = serializers.CharField(source='order.order_code', read_only=True)
+    order_date = serializers.DateTimeField(source='order.order_date', read_only=True)
+    order_status = serializers.CharField(source='order.delivery_status', read_only=True)
+    delivery_location = serializers.CharField(source='order.delivery_location', read_only=True)
+    landmark = serializers.CharField(source='order.landmark', read_only=True)
+    product = serializers.CharField(source='product.name', read_only=True)
+    seller_name = serializers.CharField(source='seller.name', read_only=True)
+
+    class Meta:
+        model = Purchase
+        fields = [
+            'id', 'buyer_name', 'order_code', 'product', 'quantity',
+            'price', 'order_date', 'order_status', 'delivery_location',
+            'landmark', 'seller_name',
+        ]
