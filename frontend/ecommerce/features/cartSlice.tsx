@@ -1,8 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Product } from "../types";
 
-export interface CartItem extends Product {
+export interface CartItem {
+  id: number;
+  name: string;
+  price: number;
   quantity: number;
+  stock: number;
+  currency?: { currency_code: string };
+  seller?: number | string | { id: number };
+  new_price?: number;
+  initial_price?: number;
+  seller_name?: string;
 }
 
 interface CartState {
@@ -28,7 +37,7 @@ const cartSlice = createSlice({
       }
       localStorage.setItem("cart", JSON.stringify(state.items));
     },
-    removeFromCart(state, action: PayloadAction<number>) { // id is number
+    removeFromCart(state, action: PayloadAction<number>) { 
       state.items = state.items.filter((i) => i.id !== action.payload);
       localStorage.setItem("cart", JSON.stringify(state.items));
     },
