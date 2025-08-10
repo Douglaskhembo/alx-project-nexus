@@ -36,6 +36,22 @@ class ProductSerializer(serializers.ModelSerializer):
         queryset=Currency.objects.all(), source='currency', write_only=True
     )
 
+    def validate_discount_amount(self, value):
+        if value is None or value < 0:
+            return Decimal('0.00')
+        return value
+
+    def create(self, validated_data):
+        if 'discount_amount' not in validated_data or validated_data['discount_amount'] is None:
+            validated_data['discount_amount'] = Decimal('0.00')
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        if 'discount_amount' in validated_data and (
+                validated_data['discount_amount'] is None or validated_data['discount_amount'] < 0):
+            validated_data['discount_amount'] = Decimal('0.00')
+        return super().update(instance, validated_data)
+
     seller_name = serializers.CharField(source='seller.name', read_only=True)
     discounted_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     tags = serializers.ListField(child=serializers.CharField(), source='tag_list', read_only=True)
