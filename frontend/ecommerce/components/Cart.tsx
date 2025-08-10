@@ -13,7 +13,7 @@ export default function Cart() {
   const [loading, setLoading] = useState(false);
 
   const total = items.reduce(
-    (sum, item) => sum + (Number(item.new_price ?? item.price) || 0) * item.quantity,
+    (sum, item) => sum + (Number((item as any).new_price ?? item.price) || 0) * item.quantity,
     0
   );
 
