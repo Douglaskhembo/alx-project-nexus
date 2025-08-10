@@ -17,45 +17,49 @@ export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModa
   const [phone_number, setPhoneNumber] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState(isAdmin ? "BUYER" : "BUYER");
+  const [role, setRole] = useState("BUYER");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
+  e.preventDefault();
+  setLoading(true);
+  try {
+    if (isAdmin) {
+      await API.createSellerOrAdmin({
+        name,
+        email,
+        username,
+        password,
+        phone_number,
+        role,
+      });
+      toast.success("User added successfully!");
+    } else {
       await API.registerUser({
         name,
         email,
         username,
         password,
         phone_number,
-        role: isAdmin ? role : "BUYER",
       });
-
-      toast.success(isAdmin ? "User added successfully!" : "Account created successfully!", {
-        autoClose: 2000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-      });
-
-      setName("");
-      setEmail("");
-      setUsername("");
-      setPassword("");
-      setPhoneNumber("");
-      setRole("BUYER");
-      setError(null);
-      onClose();
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "Registration failed");
-    } finally {
-      setLoading(false);
+      toast.success("Account created successfully!");
     }
-  };
+    setName("");
+    setEmail("");
+    setUsername("");
+    setPassword("");
+    setPhoneNumber("");
+    setRole("BUYER");
+    setError(null);
+    onClose();
+  } catch (err: any) {
+    setError(err.response?.data?.detail || "Registration failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div
@@ -125,9 +129,8 @@ export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModa
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
                   >
-                    <option value="ADMIN">ADMIN</option>
-                    <option value="BUYER">BUYER</option>
-                    <option value="SELLER">SELLER</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="SELLER">Seller</option>
                   </select>
                 </div>
               )}

@@ -32,8 +32,8 @@ class APIConfig {
   }
 
   // Admin
-  createSeller(sellerData: any) {
-    return api.post(`${USERS_URL}/admin/create-seller/`, sellerData);
+  createSellerOrAdmin(userData: any) {
+    return api.post(`${USERS_URL}/admin/create-seller/`, userData);
   }
 
   // Seller-only endpoint

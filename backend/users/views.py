@@ -32,10 +32,34 @@ class BuyerRegisterView(generics.CreateAPIView):
 class CreateSellerView(generics.CreateAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
-    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]  # admin only
 
     def perform_create(self, serializer):
-        serializer.save(role='SELLER')
+
+        role = self.request.data.get('role', 'SELLER').upper()
+        if role not in ['SELLER', 'ADMIN']:
+            role = 'SELLER'
+
+        user = serializer.save(role=role)
+
+        password = self.request.data.get('password')  # raw password from request for email
+
+        send_mail(
+            subject="Your NexusMarket Account",
+            message=(
+                f"Dear {user.name},\n\n"
+                f"Your NexusMarket {role.lower()} account has been created successfully.\n"
+                f"Email: {user.email}\n"
+                f"Password: {password}\n\n"
+                f"You can log in with the above password and change password under profile, or use 'Forgot Password' on the login page to set a new one.\n\n"
+                f"Regards,\n"
+                f"NexusMarket Admin Department"
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -96,7 +120,7 @@ class PasswordResetView(APIView):
                 f"Your NexusMarket account password has been successfully changed.\n"
                 f"If you did not perform this action, please contact support immediately. \n\n"
                 f"Regards, \n"
-                f"NexusMarket admin Department"
+                f"NexusMarket Admin Department"
             ),
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],
@@ -128,7 +152,7 @@ class ForgotPasswordRequestView(APIView):
                      f"Your OTP is: {otp}\n"
                      f"It will expire in 5 minutes.\n\n"
                      f"Regards, \n"
-                     f"NexusMarket admin Department"
+                     f"NexusMarket Admin Department"
                      ),
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[email],

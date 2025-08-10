@@ -138,14 +138,6 @@ export default function Header({ onToggleCart }: HeaderProps) {
                         <li>
                           <button
                             className="dropdown-item d-flex align-items-center gap-2"
-                            onClick={() => handleMenuClick(() => setShowAddProduct(true))}
-                          >
-                            <FaBox /> Add Product
-                          </button>
-                        </li>
-                        <li>
-                          <button
-                            className="dropdown-item d-flex align-items-center gap-2"
                             onClick={() => handleMenuClick(() => setShowAddCategory(true))}
                           >
                             <FaListAlt /> Add Category
@@ -160,6 +152,16 @@ export default function Header({ onToggleCart }: HeaderProps) {
                           </button>
                         </li>
                       </>
+                    )}
+                    {(auth.role === "SELLER") && (
+                      <li>
+                        <button
+                          className="dropdown-item d-flex align-items-center gap-2"
+                          onClick={() => handleMenuClick(() => setShowAddProduct(true))}
+                        >
+                          <FaBox /> Add Product
+                        </button>
+                      </li>
                     )}
                     <li>
                       <button
