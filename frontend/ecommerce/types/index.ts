@@ -1,12 +1,61 @@
-export interface Product {
-  id: string;
+export interface Currency {
+  id: number;
+  country_code: string;
+  country_name: string;
+  currency_code: string;
+  currency_name: string;
+}
+
+export interface Category {
+  id: number;
   name: string;
   description: string;
-  price: number;
-  image: string;
-  discount: number;
-  rating: number;
-  category: string;
-  tags: string[];
-  inStock: boolean;
 }
+
+export interface Product {
+  id: number;
+  name: string;
+  description: string;
+  new_price: number;
+  initial_price: number;
+  currency: Currency;
+  discount_amount: number;
+  image_url?: string | null;
+  tags: string[];
+  stock: number;
+  rating?: number | null;
+  reviews: number;
+  category: Category;
+  seller: number;
+  seller_name?: string;
+  created_at: string;
+}
+
+// export interface Product {
+//   id: number;
+//   name: string;
+//   description: string;
+//   initial_price: number;
+//   currency: {
+//     id: number;
+//     country_code: string;
+//     country_name: string;
+//     currency_code: string;
+//     currency_name: string;
+//   }
+//   discount_amount: number;
+//   new_price: number;
+//   image_url?: string | null;
+//   tags: string;
+//   stock: number;
+//   rating?: number | null;
+//   reviews: number;
+//   category: {
+//     id: number;
+//     name: string;
+//     description: string;
+//   };
+//   seller: number;
+//   seller_name?: string;
+//   created_at: string;
+// }

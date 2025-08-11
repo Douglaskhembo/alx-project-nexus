@@ -4,14 +4,16 @@ import { fetchProducts } from "../features/productsSlice";
 import ProductCard from "../components/ProductCard";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import SortSelect from "../components/SortSelect";
 import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
 import Cart from "../components/Cart";
 import Purchases from "../components/Purchases";
+import { Product } from "../types";
 
 export default function Home() {
   const dispatch = useAppDispatch();
-  const { items, status, page, hasMore, totalProducts } = useAppSelector((state) => state.products);
+  const { items, status, page, hasMore } = useAppSelector(
+    (state) => state.products
+  );
 
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState("newest");
@@ -52,14 +54,12 @@ export default function Home() {
               <Purchases />
             ) : (
               <section>
-                {/* Product Catalog Header */}
                 <div className="mb-4">
                   <h2 className="h3 fw-bold">Product Catalog</h2>
                   <p className="text-muted">Discover amazing products at great prices</p>
                 </div>
-                {/* Product Grid */}
                 <div className="row g-4">
-                  {items.map((product, index) =>
+                  {items.map((product: Product, index: number) =>
                     index === items.length - 1 ? (
                       <div
                         className="col-12 col-sm-6 col-lg-4"

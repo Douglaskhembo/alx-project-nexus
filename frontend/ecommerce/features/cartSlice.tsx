@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Product } from "../types";
+import { Currency } from "../types";
 
 export interface CartItem {
   id: number;
@@ -7,11 +7,11 @@ export interface CartItem {
   price: number;
   quantity: number;
   stock: number;
-  currency?: { currency_code: string };
-  seller?: number | string | { id: number };
+  currency: Currency;
+  seller: number;
+  seller_name?: string;
   new_price?: number;
   initial_price?: number;
-  seller_name?: string;
 }
 
 interface CartState {

@@ -1,35 +1,7 @@
 import Link from "next/link";
 import { useAppDispatch } from "../hooks";
 import { addToCart } from "../features/cartSlice";
-
-export interface Product {
-  id: number;
-  name: string;
-  description: string;
-  initial_price: number;
-  currency: {
-    id: number;
-    country_code: string;
-    country_name: string;
-    currency_code: string;
-    currency_name: string;
-  }
-  discount_amount: number;
-  new_price: number;
-  image_url?: string | null;
-  tags: string;
-  stock: number;
-  rating?: number | null;
-  reviews: number;
-  category: {
-    id: number;
-    name: string;
-    description: string;
-  };
-  seller: number;
-  seller_name?: string;
-  created_at: string;
-}
+import { Product } from "../types";
 
 interface ProductCardProps {
   product: Product;
@@ -38,18 +10,23 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const dispatch = useAppDispatch();
 
-const handleAddToCart = () => {
-  dispatch(addToCart({
-    ...product,
+  const handleAddToCart = () => {
+dispatch(
+  addToCart({
+    id: product.id,
+    name: product.name,
     price: Number(product.new_price ?? product.initial_price),
     quantity: 1,
     stock: product.stock,
     currency: product.currency,
     seller: product.seller,
     seller_name: product.seller_name,
-  }));
-};
+    new_price: product.new_price,
+    initial_price: product.initial_price,
+  })
+);
 
+  };
 
   return (
     <div className="card shadow-sm h-100 position-relative">
@@ -58,24 +35,31 @@ const handleAddToCart = () => {
           src={product.image_url || "/placeholder.png"}
           className="card-img-top"
           alt={product.name}
-          style={{ height: '200px', objectFit: 'cover' }}
+          style={{ height: "200px", objectFit: "cover" }}
         />
       </Link>
 
       <div className="card-body d-flex flex-column">
         <h5 className="card-title">{product.name}</h5>
         <p className="text-truncate card-description">{product.description}</p>
+
         {product.seller_name && (
           <span className="text-truncate me-2">
-            seller: <strong>{product.seller_name}</strong>
+            Seller: <strong>{product.seller_name}</strong>
           </span>
         )}
+
         {product.rating !== undefined && (
           <div className="d-flex align-items-center small mb-2">
             <span className="text-warning">
-              {/* Star icon */}
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.89-.696L7.538.792c.197-.37.73-.37.927 0l2.184 4.156 4.89.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.89-.696L7.538.792c.197-.37.73-.37.927 0l2.184 4.156 4.89.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
               </svg>
             </span>
             <span className="text-muted ms-1">
@@ -87,17 +71,24 @@ const handleAddToCart = () => {
         <div className="mt-auto">
           <div className="d-flex align-items-baseline mb-2">
             <span className="fs-5 fw-bold text-primary me-2">
-              {product.currency.currency_code} {product.new_price ? Number(product.new_price).toFixed(2) : "0.00"}
+              {product.currency.currency_code}{" "}
+              {product.new_price
+                ? Number(product.new_price).toFixed(2)
+                : "0.00"}
             </span>
           </div>
-          <div className="d-flex align-items-baseline mb-2">
-            {product.discount_amount > 0 && (
+
+          {product.discount_amount > 0 && (
+            <div className="d-flex align-items-baseline mb-2">
               <span className="text-muted text-decoration-line-through">
-                {product.currency.currency_code} {product.initial_price ? Number(product.initial_price).toFixed(2) : "0.00"}
+                {product.currency.currency_code}{" "}
+                {product.initial_price
+                  ? Number(product.initial_price).toFixed(2)
+                  : "0.00"}
               </span>
-            )}
-          </div>
-          
+            </div>
+          )}
+
           {product.stock > 0 ? (
             <button
               onClick={handleAddToCart}
