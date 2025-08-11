@@ -1,5 +1,5 @@
-// import AddProductForm from "../components/modals/AddProductModal";
+import AddProductForm from "../components/modals/AddProductModal";
 
-// export default function AddProductPage() {
-//   return <AddProductForm />;
-// }
+export default function AddProductPage() {
+  return <AddProductForm />;
+}
