@@ -64,7 +64,7 @@ api.interceptors.response.use(
         }
 
         // Request new access token
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/refresh/`, {
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/users/refresh/`, {
           refresh: refreshToken,
         });
 
