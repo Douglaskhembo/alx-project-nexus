@@ -31,21 +31,32 @@ const cartSlice = createSlice({
     addToCart(state, action: PayloadAction<CartItem>) {
       const existing = state.items.find((i) => i.id === action.payload.id);
       if (existing) {
-        existing.quantity += 1;
+        // Only increase if stock allows
+        if (existing.quantity < existing.stock) {
+          existing.quantity += 1;
+        }
       } else {
-        state.items.push({ ...action.payload });
+        // Add at least 1 but never more than stock
+        state.items.push({ 
+          ...action.payload, 
+          quantity: Math.min(action.payload.quantity || 1, action.payload.stock) 
+        });
       }
       localStorage.setItem("cart", JSON.stringify(state.items));
-    }
-    ,
-    removeFromCart(state, action: PayloadAction<number>) { 
+    },
+    removeFromCart(state, action: PayloadAction<number>) {
       state.items = state.items.filter((i) => i.id !== action.payload);
       localStorage.setItem("cart", JSON.stringify(state.items));
     },
     updateQuantity(state, action: PayloadAction<{ id: number; quantity: number }>) {
       const item = state.items.find((i) => i.id === action.payload.id);
       if (item) {
-        item.quantity = action.payload.quantity;
+        // Cap quantity to stock
+        item.quantity = Math.min(action.payload.quantity, item.stock);
+        if (item.quantity < 1) {
+          // Remove if quantity is zero
+          state.items = state.items.filter((i) => i.id !== item.id);
+        }
       }
       localStorage.setItem("cart", JSON.stringify(state.items));
     },
