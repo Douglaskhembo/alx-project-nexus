@@ -31,6 +31,20 @@ export interface Product {
   created_at: string;
 }
 
+interface Purchase {
+  id: number;
+  buyer_name: string;
+  order_code: string;
+  product: string;
+  quantity: number;
+  price: number | string;
+  order_date: string;
+  order_status: string;
+  delivery_location: string;
+  landmark: string;
+  seller_name?: string;
+}
+
 // export interface Product {
 //   id: number;
 //   name: string;

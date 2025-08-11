@@ -8,7 +8,7 @@ interface Purchase {
   order_code: string;
   product: string;
   quantity: number;
-  price: number | string;  // Accept string too in case API sends price as string
+  price: number | string;
   order_date: string;
   order_status: string;
   delivery_location: string;
