@@ -38,9 +38,18 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const dispatch = useAppDispatch();
 
-  const handleAddToCart = () => {
-    dispatch(addToCart({ ...product, quantity: 1 }));
-  };
+const handleAddToCart = () => {
+  dispatch(addToCart({
+    ...product,
+    price: Number(product.new_price ?? product.initial_price),
+    quantity: 1,
+    stock: product.stock,
+    currency: product.currency,
+    seller: product.seller,
+    seller_name: product.seller_name,
+  }));
+};
+
 
   return (
     <div className="card shadow-sm h-100 position-relative">
