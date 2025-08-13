@@ -11,7 +11,7 @@ class APIConfig {
   }
 
   login(credentials: { email: string; password: string }) {
-    return api.post(`${USERS_URL}/login/`, credentials); // returns JWT tokens
+    return publicApi.post(`${USERS_URL}/login/`, credentials); // returns JWT tokens
   }
 
   refreshToken(refreshToken: string) {

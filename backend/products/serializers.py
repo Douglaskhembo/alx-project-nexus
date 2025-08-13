@@ -59,9 +59,12 @@ class ProductSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(required=False, allow_null=True)
 
     def get_image_url(self, obj):
-        request = self.context.get('request')
         if obj.image:
-            return request.build_absolute_uri(obj.image.url)
+            image_url = obj.image.url
+            if image_url.startswith('http://') or image_url.startswith('https://'):
+                return image_url
+            request = self.context.get('request')
+            return request.build_absolute_uri(image_url) if request else image_url
         return None
 
     class Meta:
