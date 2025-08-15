@@ -35,9 +35,11 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Product.objects.filter(stock__gt=0).order_by('-created_at')
 
     def perform_create(self, serializer):
+        print("FILES RECEIVED:", self.request.FILES.get('image'))
+        print("TYPE:", type(self.request.FILES.get('image')))
         user = self.request.user
         if user.is_authenticated and user.role in ['SELLER', 'ADMIN']:
-            serializer.save(seller=user)
+            serializer.save(seller=user, image=self.request.FILES.get('image'))
         else:
             raise PermissionDenied("Only SELLER or ADMIN can add products.")
 

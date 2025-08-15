@@ -36,6 +36,34 @@ class ProductSerializer(serializers.ModelSerializer):
         queryset=Currency.objects.all(), source='currency', write_only=True
     )
 
+    seller_name = serializers.CharField(source='seller.name', read_only=True)
+    discounted_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    tags = serializers.ListField(child=serializers.CharField(), source='tag_list', read_only=True)
+
+    # Writable field for uploads
+    image = serializers.ImageField(required=False, allow_null=True)
+
+    class Meta:
+        model = Product
+        fields = [
+            'id', 'name', 'description', 'initial_price', 'currency', 'currency_id',
+            'discount_amount', 'discounted_price', 'new_price', 'image',
+            'tags', 'stock', 'category', 'category_id', 'seller',
+            'seller_name', 'rating', 'reviews', 'created_at'
+        ]
+
+    def to_representation(self, instance):
+        """Override to return full Cloudinary URL for image"""
+        data = super().to_representation(instance)
+        if instance.image:
+            try:
+                data['image'] = instance.image.url
+            except Exception:
+                data['image'] = None
+        else:
+            data['image'] = None
+        return data
+
     def validate_discount_amount(self, value):
         if value is None or value < 0:
             return Decimal('0.00')
@@ -48,33 +76,11 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         if 'discount_amount' in validated_data and (
-                validated_data['discount_amount'] is None or validated_data['discount_amount'] < 0):
+            validated_data['discount_amount'] is None or validated_data['discount_amount'] < 0
+        ):
             validated_data['discount_amount'] = Decimal('0.00')
         return super().update(instance, validated_data)
 
-    seller_name = serializers.CharField(source='seller.name', read_only=True)
-    discounted_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
-    tags = serializers.ListField(child=serializers.CharField(), source='tag_list', read_only=True)
-    image_url = serializers.SerializerMethodField()
-    image = serializers.ImageField(required=False, allow_null=True)
-
-    def get_image_url(self, obj):
-        if obj.image:
-            image_url = obj.image.url
-            if image_url.startswith('http://') or image_url.startswith('https://'):
-                return image_url
-            request = self.context.get('request')
-            return request.build_absolute_uri(image_url) if request else image_url
-        return None
-
-    class Meta:
-        model = Product
-        fields = [
-            'id', 'name', 'description', 'initial_price', 'currency', 'currency_id',
-            'discount_amount', 'discounted_price', 'new_price','image', 'image_url',
-            'tags', 'stock', 'category', 'category_id', 'seller',
-            'seller_name', 'rating', 'reviews', 'created_at'
-        ]
 
 class PurchaseSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)

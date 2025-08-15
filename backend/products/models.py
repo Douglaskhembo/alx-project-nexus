@@ -1,6 +1,7 @@
 from django.db import models
 from users.models import User
 from django.utils import timezone
+from cloudinary.models import CloudinaryField
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -21,7 +22,8 @@ class Product(models.Model):
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
     discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     new_price = models.DecimalField(max_digits=10, decimal_places=2, editable=False, default=0.00)
-    image = models.ImageField(upload_to='product_images/', blank=True, null=True)
+    # image = models.ImageField(upload_to='product_images/', blank=True, null=True)
+    image = CloudinaryField('image', blank=True, null=True)
     tags = models.CharField(max_length=255, blank=True)
     stock = models.PositiveIntegerField(default=10)
     rating = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
