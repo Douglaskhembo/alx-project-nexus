@@ -32,7 +32,7 @@ dispatch(
     <div className="card shadow-sm h-100 position-relative">
       <Link href={`/product/${product.id}`}>
         <img
-          src={product.image_url || "/placeholder.png"}
+          src={product.image || "/placeholder.png"}
           className="card-img-top"
           alt={product.name}
           style={{ height: "200px", objectFit: "cover" }}

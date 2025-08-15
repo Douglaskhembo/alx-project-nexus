@@ -21,6 +21,7 @@ export interface Product {
   currency: Currency;
   discount_amount: number;
   image_url?: string | null;
+  image?: string | null;
   tags: string[];
   stock: number;
   rating?: number | null;
