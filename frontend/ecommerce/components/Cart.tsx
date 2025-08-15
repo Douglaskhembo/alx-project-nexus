@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "../hooks";
 import { removeFromCart, updateQuantity, clearCart } from "../features/cartSlice";
 import CheckoutModal from "./modals/CheckoutModal";
 import API from "../services/apiConfig";
+import Swal from "sweetalert2";
 
 export default function Cart() {
   const { items } = useAppSelector((state) => state.cart);
@@ -37,7 +38,11 @@ export default function Cart() {
     paymentOption: string
   ) => {
     if (!auth.role || auth.role !== "BUYER") {
-      alert("You need to log in to place an order.");
+      Swal.fire({
+        icon: "warning",
+        title: "Login Required",
+        text: "You need to log in to place an order.",
+      });
       return;
     }
 
@@ -56,11 +61,24 @@ export default function Cart() {
     try {
       setLoading(true);
       const response = await API.placeOrder(orderData);
-      alert(`Order placed successfully! Order Code: ${response.data.order_code}`);
-      dispatch(clearCart());
-      setIsCheckoutOpen(false);
+
+      Swal.fire({
+        icon: "success",
+        title: "Order Placed!",
+        text: `Order Code: ${response.data.order_code}`,
+        confirmButtonText: "OK",
+      }).then(() => {
+        dispatch(clearCart());
+        setIsCheckoutOpen(false);
+        window.location.reload();
+      });
+
     } catch (err: any) {
-      alert(err.response?.data?.detail || err.message || "Something went wrong while placing the order");
+      Swal.fire({
+        icon: "error",
+        title: "Order Failed",
+        text: err.response?.data?.detail || err.message || "Something went wrong while placing the order",
+      });
     } finally {
       setLoading(false);
     }

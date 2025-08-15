@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import API from "../../services/apiConfig";
 
 const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }) => {
@@ -62,11 +62,19 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
     e.preventDefault();
 
     if (!categoryId) {
-      toast.error("Please select a category.");
+      Swal.fire({
+        icon: "error",
+        title: "Missing Category",
+        text: "Please select a category.",
+      });
       return;
     }
     if (!currencyId) {
-      toast.error("Please select a currency.");
+      Swal.fire({
+        icon: "error",
+        title: "Missing Currency",
+        text: "Please select a currency.",
+      });
       return;
     }
 
@@ -90,12 +98,22 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
 
     try {
       await API.addProduct(formData);
-      toast.success("Product added successfully");
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Product added successfully",
+        timer: 2000,
+        showConfirmButton: false,
+      });
       resetForm();
       onHide();
     } catch (err) {
       console.error(err);
-      toast.error("Failed to add product");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to add product",
+      });
     }
   };
 
@@ -155,7 +173,7 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
           </div>
 
           <div className="mb-3 d-flex align-items-center gap-2">
-             <label style={{ width: "120px" }}>Status:</label>
+            <label style={{ width: "120px" }}>Status:</label>
             <select
               className="form-control"
               value={status}
@@ -168,7 +186,7 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
           </div>
 
           <div className="mb-3 d-flex align-items-center gap-2">
-             <label style={{ width: "120px" }}>Tags (comma-separated)</label>
+            <label style={{ width: "120px" }}>Tags (comma-separated)</label>
             <input
               type="text"
               className="form-control"
@@ -213,8 +231,13 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
           </div>
 
           <div className="mb-3 d-flex align-items-center gap-2">
-            <label className="form-check-label" htmlFor="enableDiscount" style={{ width: "120px" }} >
-              Enable Discount</label>
+            <label
+              className="form-check-label"
+              htmlFor="enableDiscount"
+              style={{ width: "120px" }}
+            >
+              Enable Discount
+            </label>
             <input
               type="checkbox"
               className="form-check-input"

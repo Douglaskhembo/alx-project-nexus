@@ -86,6 +86,7 @@ const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleLogout = () => {
     dispatch(logout());
     setShowProfileDropdown(false);
+    window.location.reload();
   };
 
   return (

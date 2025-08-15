@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import API from "../../services/apiConfig";
 import { useAppSelector } from "../../hooks";
 
@@ -22,44 +22,61 @@ export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModa
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
-  try {
-    if (isAdmin) {
-      await API.createSellerOrAdmin({
-        name,
-        email,
-        username,
-        password,
-        phone_number,
-        role,
-      });
-      toast.success("User added successfully!");
-    } else {
-      await API.registerUser({
-        name,
-        email,
-        username,
-        password,
-        phone_number,
-      });
-      toast.success("Account created successfully!");
-    }
-    setName("");
-    setEmail("");
-    setUsername("");
-    setPassword("");
-    setPhoneNumber("");
-    setRole("BUYER");
-    setError(null);
-    onClose();
-  } catch (err: any) {
-    setError(err.response?.data?.detail || "Registration failed");
-  } finally {
-    setLoading(false);
-  }
-};
+    e.preventDefault();
+    setLoading(true);
+    try {
+      if (isAdmin) {
+        await API.createSellerOrAdmin({
+          name,
+          email,
+          username,
+          password,
+          phone_number,
+          role,
+        });
+        await Swal.fire({
+          icon: "success",
+          title: "User added successfully!",
+          confirmButtonColor: "#3085d6",
+        });
+      } else {
+        await API.registerUser({
+          name,
+          email,
+          username,
+          password,
+          phone_number,
+        });
+        await Swal.fire({
+          icon: "success",
+          title: "Account created successfully!",
+          confirmButtonColor: "#3085d6",
+        });
+        window.location.reload();
+      }
 
+      // Reset form
+      setName("");
+      setEmail("");
+      setUsername("");
+      setPassword("");
+      setPhoneNumber("");
+      setRole("BUYER");
+      setError(null);
+      onClose();
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.detail || "Registration failed";
+      setError(errorMessage);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: errorMessage,
+        confirmButtonColor: "#d33",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div

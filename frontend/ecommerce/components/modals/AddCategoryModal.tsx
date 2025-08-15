@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import API from "../../services/apiConfig";
 
 interface AddCategoryModalProps {
@@ -11,30 +11,46 @@ interface AddCategoryModalProps {
 const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ show, onHide }) => {
   const [categoryName, setCategoryName] = useState("");
   const [categoryDescription, setCategoryDescription] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!categoryName.trim()) {
-      toast.error("Category name is required.");
+      Swal.fire({
+        icon: "error",
+        title: "Missing Information",
+        text: "Category name is required.",
+      });
       return;
     }
 
+    setLoading(true);
     try {
       await API.addCategory({
         name: categoryName,
         description: categoryDescription,
       });
 
-      toast.success("Category added successfully");
+      Swal.fire({
+        icon: "success",
+        title: "Category Added",
+        text: "The category has been added successfully.",
+        confirmButtonColor: "#3085d6",
+      });
+
       setCategoryName("");
       setCategoryDescription("");
       onHide();
     } catch (error) {
       console.error(error);
-      toast.error("Failed to add category");
-      setCategoryName("");
-      setCategoryDescription("");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to add category. Please try again.",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,6 +69,7 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ show, onHide }) => 
               value={categoryName}
               onChange={(e) => setCategoryName(e.target.value)}
               required
+              disabled={loading}
             />
           </div>
 
@@ -62,11 +79,12 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ show, onHide }) => 
               className="form-control"
               value={categoryDescription}
               onChange={(e) => setCategoryDescription(e.target.value)}
+              disabled={loading}
             />
           </div>
 
-          <Button type="submit" className="w-100">
-            Add Category
+          <Button type="submit" className="w-100" disabled={loading}>
+            {loading ? "Adding..." : "Add Category"}
           </Button>
         </form>
       </Modal.Body>

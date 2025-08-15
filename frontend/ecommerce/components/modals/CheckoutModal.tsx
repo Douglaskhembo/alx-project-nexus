@@ -18,6 +18,7 @@ export default function CheckoutModal({ show, onHide, onPlaceOrder }: CheckoutMo
     setDeliveryLocation("");
     setLandmark("");
     setPaymentOption("cash");
+    onHide();
   };
 
   return (

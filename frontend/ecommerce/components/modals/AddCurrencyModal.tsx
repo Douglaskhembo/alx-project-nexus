@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import API from "../../services/apiConfig";
 
 interface AddCurrencyModalProps {
@@ -11,11 +11,20 @@ export default function AddCurrencyModal({ onClose }: AddCurrencyModalProps) {
   const [countryCode, setCountryCode] = useState("");
   const [currencyCode, setCurrencyCode] = useState("");
   const [currencyName, setCurrencyName] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleAddCurrency = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!countryName.trim() || !countryCode.trim() || !currencyCode.trim() || !currencyName.trim()) {
+      Swal.fire({
+        icon: "error",
+        title: "Missing Information",
+        text: "All fields are required. Please fill them in before submitting.",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       await API.createCurrency({
@@ -25,23 +34,25 @@ export default function AddCurrencyModal({ onClose }: AddCurrencyModalProps) {
         currency_name: currencyName,
       });
 
-      toast.success("Currency added successfully!", {
-        autoClose: 2000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
+      Swal.fire({
+        icon: "success",
+        title: "Currency Added",
+        text: "The currency has been added successfully.",
+        confirmButtonColor: "#3085d6",
       });
 
       setCountryName("");
       setCountryCode("");
       setCurrencyCode("");
       setCurrencyName("");
-      setError(null);
 
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.detail || "Failed to add currency");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.response?.data?.detail || "Failed to add currency. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -63,10 +74,10 @@ export default function AddCurrencyModal({ onClose }: AddCurrencyModalProps) {
               className="btn-close"
               aria-label="Close"
               onClick={onClose}
+              disabled={loading}
             ></button>
           </div>
           <div className="modal-body">
-            {error && <p className="text-danger text-center">{error}</p>}
             <form onSubmit={handleAddCurrency}>
               <div className="mb-3 d-flex align-items-center gap-2">
                 <label style={{ width: "140px" }}>Country Name:</label>
@@ -77,6 +88,7 @@ export default function AddCurrencyModal({ onClose }: AddCurrencyModalProps) {
                   value={countryName}
                   onChange={(e) => setCountryName(e.target.value)}
                   required
+                  disabled={loading}
                 />
               </div>
 
@@ -89,6 +101,7 @@ export default function AddCurrencyModal({ onClose }: AddCurrencyModalProps) {
                   value={countryCode}
                   onChange={(e) => setCountryCode(e.target.value)}
                   required
+                  disabled={loading}
                 />
               </div>
 
@@ -101,6 +114,7 @@ export default function AddCurrencyModal({ onClose }: AddCurrencyModalProps) {
                   value={currencyCode}
                   onChange={(e) => setCurrencyCode(e.target.value)}
                   required
+                  disabled={loading}
                 />
               </div>
 
@@ -113,6 +127,7 @@ export default function AddCurrencyModal({ onClose }: AddCurrencyModalProps) {
                   value={currencyName}
                   onChange={(e) => setCurrencyName(e.target.value)}
                   required
+                  disabled={loading}
                 />
               </div>
 

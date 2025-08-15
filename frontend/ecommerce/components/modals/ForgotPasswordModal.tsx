@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { FaEnvelope, FaKey } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { FaKey } from "react-icons/fa";
+import Swal from "sweetalert2";
 import API from "@/services/apiConfig";
 
 interface ForgotPasswordModalProps {
@@ -13,46 +14,94 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }: Forgot
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false); // ✅ prevent double submission
+
+  const [timeLeft, setTimeLeft] = useState(0);
+
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
 
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return; // ✅ ignore if already submitting
     setLoading(true);
-    setError(null);
+    setIsSubmitting(true);
+
     try {
       await API.sendForgotPasswordOTP(email);
-      alert("OTP has been sent to your registered email and registered phone.");
+
+      Swal.fire({
+        icon: "success",
+        title: "OTP Sent!",
+        text: "We’ve sent an OTP to your registered email and phone. You have 5 minutes to use it.",
+        confirmButtonColor: "#3085d6"
+      });
+
       setStep(2);
+      setTimeLeft(300);
     } catch (err: any) {
-      console.error(err);
-      setError(
-        err.response?.data?.detail || "Failed to send OTP. Please try again."
-      );
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.response?.data?.detail || "Failed to send OTP. Please try again."
+      });
     } finally {
       setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return; // ✅ ignore if already submitting
+    if (timeLeft <= 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "OTP Expired",
+        text: "Your OTP has expired. Please request a new one."
+      });
+      return;
+    }
+
     setLoading(true);
-    setError(null);
+    setIsSubmitting(true);
+
     try {
       await API.verifyOTPAndResetPassword({
         email,
         otp,
         new_password: newPassword,
       });
-      alert("Password reset successful! You can now log in with your new password.");
-      onSwitchToLogin();
+
+      Swal.fire({
+        icon: "success",
+        title: "Password Reset Successful",
+        text: "You can now log in with your new password.",
+        confirmButtonColor: "#3085d6"
+      }).then(() => {
+        onSwitchToLogin();
+      });
     } catch (err: any) {
-      console.error(err);
-      setError(
-        err.response?.data?.detail || "Invalid OTP or password reset failed. Please try again."
-      );
+      Swal.fire({
+        icon: "error",
+        title: "Invalid OTP",
+        text: err.response?.data?.detail || "Password reset failed. Please try again."
+      });
     } finally {
       setLoading(false);
+      setIsSubmitting(false);
     }
+  };
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
   };
 
   return (
@@ -71,8 +120,6 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }: Forgot
             <button type="button" className="btn-close" aria-label="Close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
-            {error && <p className="text-danger text-center">{error}</p>}
-
             {step === 1 && (
               <form onSubmit={handleSendOTP}>
                 <div className="mb-3 d-flex align-items-center gap-2">
@@ -86,7 +133,11 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }: Forgot
                     required
                   />
                 </div>
-                <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+                <button
+                  type="submit"
+                  className="btn btn-primary w-100"
+                  disabled={loading || isSubmitting}
+                >
                   {loading ? "Sending..." : "Send OTP"}
                 </button>
               </form>
@@ -94,6 +145,17 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }: Forgot
 
             {step === 2 && (
               <form onSubmit={handleResetPassword}>
+                {timeLeft > 0 && (
+                  <p className="text-center text-muted">
+                    OTP expires in <strong>{formatTime(timeLeft)}</strong>
+                  </p>
+                )}
+                {timeLeft <= 0 && (
+                  <p className="text-center text-danger">
+                    OTP expired. Please request a new one.
+                  </p>
+                )}
+
                 <div className="mb-3 d-flex align-items-center gap-2">
                   <FaKey className="text-muted" />
                   <input
@@ -103,6 +165,7 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }: Forgot
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                     required
+                    disabled={timeLeft <= 0}
                   />
                 </div>
                 <div className="mb-3 d-flex align-items-center gap-2">
@@ -114,9 +177,14 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }: Forgot
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     required
+                    disabled={timeLeft <= 0}
                   />
                 </div>
-                <button type="submit" className="btn btn-success w-100" disabled={loading}>
+                <button
+                  type="submit"
+                  className="btn btn-success w-100"
+                  disabled={loading || isSubmitting || timeLeft <= 0}
+                >
                   {loading ? "Resetting..." : "Reset Password"}
                 </button>
               </form>
@@ -127,7 +195,7 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }: Forgot
               type="button"
               onClick={onSwitchToLogin}
               className="btn btn-link p-0"
-              disabled={loading}
+              disabled={loading || isSubmitting}
             >
               Back to Login
             </button>

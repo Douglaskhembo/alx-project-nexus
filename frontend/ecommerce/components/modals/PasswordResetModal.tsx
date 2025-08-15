@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import API from "../../services/apiConfig";
 import { useAppSelector } from "../../hooks";
 
@@ -13,14 +13,17 @@ export default function PasswordResetModal({ onClose }: PasswordResetModalProps)
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (newPassword !== confirmPassword) {
-      setError("New passwords do not match");
+      Swal.fire({
+        icon: "error",
+        title: "Mismatch",
+        text: "New passwords do not match.",
+      });
       return;
     }
 
@@ -31,21 +34,24 @@ export default function PasswordResetModal({ onClose }: PasswordResetModalProps)
         new_password: newPassword,
       });
 
-      toast.success("Password updated successfully!", {
-        autoClose: 2000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
+      Swal.fire({
+        icon: "success",
+        title: "Password Updated",
+        text: "Your password has been updated successfully!",
+        timer: 2000,
+        showConfirmButton: false,
       });
 
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-      setError(null);
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.detail || "Password reset failed");
+      Swal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text: err.response?.data?.detail || "Password reset failed.",
+      });
     } finally {
       setLoading(false);
     }
@@ -70,7 +76,6 @@ export default function PasswordResetModal({ onClose }: PasswordResetModalProps)
             ></button>
           </div>
           <div className="modal-body">
-            {error && <p className="text-danger text-center">{error}</p>}
             <form onSubmit={handlePasswordReset}>
               <div className="mb-3 d-flex align-items-center gap-2">
                 <label style={{ width: "160px" }}>Current Password:</label>

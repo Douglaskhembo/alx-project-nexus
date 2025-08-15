@@ -26,6 +26,7 @@ export default function LoginModal({
     const resultAction = await dispatch(login({ email, password }));
     if (login.fulfilled.match(resultAction)) {
       onClose();
+      window.location.reload();
     }
   };
 
