@@ -18,6 +18,7 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
   const [status, setStatus] = useState("active");
   const [tags, setTags] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); 
 
   const resetForm = () => {
     setProductName("");
@@ -61,12 +62,16 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     if (!categoryId) {
       Swal.fire({
         icon: "error",
         title: "Missing Category",
         text: "Please select a category.",
       });
+      setIsSubmitting(false);
       return;
     }
     if (!currencyId) {
@@ -75,6 +80,7 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
         title: "Missing Currency",
         text: "Please select a currency.",
       });
+      setIsSubmitting(false);
       return;
     }
 
@@ -98,7 +104,7 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
 
     try {
       await API.addProduct(formData);
-      Swal.fire({
+      await Swal.fire({
         icon: "success",
         title: "Success",
         text: "Product added successfully",
@@ -114,6 +120,8 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
         title: "Error",
         text: "Failed to add product",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -269,8 +277,8 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
             />
           </div>
 
-          <Button type="submit" className="w-100">
-            Add Product
+          <Button type="submit" className="w-100" disabled={isSubmitting} >
+            {isSubmitting ? "Adding..." : "Add Product"}
           </Button>
         </form>
       </Modal.Body>
