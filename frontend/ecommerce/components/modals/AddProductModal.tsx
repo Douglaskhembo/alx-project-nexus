@@ -108,17 +108,22 @@ const AddProductModal = ({ show, onHide }: { show: boolean; onHide: () => void }
         icon: "success",
         title: "Success",
         text: "Product added successfully",
-        timer: 2000,
-        showConfirmButton: false,
+        confirmButtonText: "OK",
+        confirmButtonColor: "#3085d6",
+        allowOutsideClick: false,
       });
       resetForm();
       onHide();
+      window.location.reload(); 
     } catch (err) {
       console.error(err);
       Swal.fire({
         icon: "error",
         title: "Error",
         text: "Failed to add product",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#d33",
+        allowOutsideClick: false,
       });
     } finally {
       setIsSubmitting(false);
