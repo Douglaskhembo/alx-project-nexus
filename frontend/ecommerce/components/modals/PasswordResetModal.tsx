@@ -38,8 +38,9 @@ export default function PasswordResetModal({ onClose }: PasswordResetModalProps)
         icon: "success",
         title: "Password Updated",
         text: "Your password has been updated successfully!",
-        timer: 2000,
-        showConfirmButton: false,
+        cancelButtonText: "OK",
+        confirmButtonColor: "#3085d6",
+        allowOutsideClick: false,
       });
 
       setCurrentPassword("");

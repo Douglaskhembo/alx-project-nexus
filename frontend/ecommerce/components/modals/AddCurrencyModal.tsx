@@ -38,7 +38,9 @@ export default function AddCurrencyModal({ onClose }: AddCurrencyModalProps) {
         icon: "success",
         title: "Currency Added",
         text: "The currency has been added successfully.",
+        confirmButtonText: "OK",
         confirmButtonColor: "#3085d6",
+        allowOutsideClick: false,
       });
 
       setCountryName("");

@@ -36,7 +36,9 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ show, onHide }) => 
         icon: "success",
         title: "Category Added",
         text: "The category has been added successfully.",
+        confirmButtonText: "OK",
         confirmButtonColor: "#3085d6",
+        allowOutsideClick: false,
       });
 
       setCategoryName("");
@@ -48,6 +50,9 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ show, onHide }) => 
         icon: "error",
         title: "Error",
         text: "Failed to add category. Please try again.",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#d33",
+        allowOutsideClick: false,
       });
     } finally {
       setLoading(false);

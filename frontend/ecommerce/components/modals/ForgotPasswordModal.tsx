@@ -82,7 +82,9 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }: Forgot
         icon: "success",
         title: "Password Reset Successful",
         text: "You can now log in with your new password.",
-        confirmButtonColor: "#3085d6"
+        confirmButtonText: "OK",
+        confirmButtonColor: "#3085d6",
+        allowOutsideClick: false
       }).then(() => {
         onSwitchToLogin();
       });

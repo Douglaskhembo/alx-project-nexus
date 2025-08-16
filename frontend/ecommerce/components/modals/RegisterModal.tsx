@@ -37,6 +37,8 @@ export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModa
         await Swal.fire({
           icon: "success",
           title: "User added successfully!",
+          confirmButtonText: "OK",
+          allowOutsideClick: false,
           confirmButtonColor: "#3085d6",
         });
       } else {
@@ -50,6 +52,8 @@ export default function RegisterModal({ onClose, onSwitchToLogin }: RegisterModa
         await Swal.fire({
           icon: "success",
           title: "Account created successfully!",
+          confirmButtonText: "OK",
+          allowOutsideClick: false,
           confirmButtonColor: "#3085d6",
         });
         window.location.reload();
